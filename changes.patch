@@ -1,0 +1,63 @@
+6c6
+<     <meta name="description" content="Read BIPs like a pro." />
+---
+>     <meta name="description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+11c11
+<     <meta property="og:description" content="Read BIPs like a pro." />
+---
+>     <meta property="og:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+18,19c18,19
+<     <meta name="twitter:description" content="Read BIPs like a pro." />
+<     <meta name="twitter:creator" content="@nickmonad" />
+---
+>     <meta name="twitter:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+>     <meta name="twitter:creator" content="@cryptoquick" />
+27,31d26
+< 
+<     <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<     <script src="/pagefind/pagefind-ui.js"></script>
+< 
+<     <script defer data-domain="bips.dev" src="/js/script.js"></script>
+46,63d40
+< 
+<         // searching via
+<         // https://pagefind.app
+<         window.addEventListener('DOMContentLoaded', function(event) {
+<             new PagefindUI({
+<                 element: "#search",
+<                 hightlightParam: "highlight",
+<                 showImages: false,
+<                 showSubResults: true,
+<                 translations: {
+<                     placeholder: "Search BIPs"
+<                 },
+<                 processTerm: function(term) {
+<                     plausible('Search');
+<                     return term;
+<                 }
+<             });
+<         });
+98d74
+<             <a href="/">Back to BIPs</a>
+114c90
+<                 <a href="https:&#x2F;&#x2F;github.com&#x2F;bitcoin&#x2F;bips&#x2F;blob&#x2F;master&#x2F;bip-0360.mediawiki" target="_blank">View on GitHub</a>
+---
+>                 <a href="https:&#x2F;&#x2F;github.com&#x2F;cryptoquick&#x2F;bips&#x2F;blob&#x2F;p2qrh&#x2F;bip-0360.mediawiki" target="_blank">View on GitHub</a>
+632,648d607
+< 
+< 
+<             <hr class="border-slate-700" />
+< 
+<             <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
+<                 <div class="flex items-center space-x-2">
+<                     <p class="font-bold">Updated</p>
+<                     <p class="font-bold">2025-03-06</p>
+<                 </div>
+<                 <p>See an issue with rendering or formatting? Submit an issue on <a href="https://github.com/nickmonad/bips.dev" target="_blank">GitHub</a></p>
+<                 <p>Do you find this site useful? Please consider <a href="https://buy.tryspeed.com/plink_live_lyek4a2yW2Sn2wfA" target="_blank">donating</a> some sats to support ongoing development.</p>
+<                 <p><a href="/">bips.dev</a> is presented by <a href="https://nickmonad.blog" target="_blank">nickmonad</a></p>
+<                 <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). This website makes no claim of ownership.</p>
+<             </div>
+<         </div>
+<     </div>
+< <script src="/livereload.js?port=1024&amp;mindelay=10"></script></body>

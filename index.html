@@ -223,7 +223,7 @@ to gain a quadratic speedup on brute-force attacks on the hash functions used in
 CRQC is needed for these attacks to meaningfully impact Bitcoin. For instance, a preimage attack on
 HASH160 <ref name="hash160">Used by P2PKH, P2SH, and P2WPKH addresses, though not P2WSH because it uses 256-bit hashes.</ref>
 using Grover's algorithm would require at least 10^24 quantum operations. As for Grover's application to mining, see
-<a href="https://quantumcomputing.stackexchange.com/a/12847" target="_blank">Sam Jaques’ post on this</a>.</p>
+<a href="https://quantumcomputing.stackexchange.com/a/12847" target="_blank">Sam Jaques' post on this</a>.</p>
 <h3> Rationale </h3>
 <p>This is the first in a series of BIPs under a QuBit soft fork. A qubit is a fundamental unit of quantum computing, and
 the capital B refers to Bitcoin. The name QuBit also rhymes to some extent with SegWit.</p>
@@ -244,9 +244,10 @@ Proof of Work maintains consistency with Bitcoin's existing security model. This
 commitment to a public key in the style of a
 <a href="/141" target="_blank">BIP-141 witness program</a>.
 Because it goes into the scriptPubKey, it does not receive a witness or attestation discount.</p>
-<p>Post-quantum public keys are generally larger than those used by ECC, depending on the security level. To promote user
-adoption and general user-friendliness, the most secure variant (NIST Level V, 256-bit security) is proposed, despite
-the increase in key length and verification time.</p>
+<p>Post-quantum public keys are generally larger than those used by ECC, depending on the security level.
+Originally BIP-360 proposed NIST Level V, 256-bit security, but this was changed to NIST Level I, 128-bit security
+due to concerns over the size of the public keys, the time it would take to verify signatures, and being generally
+deemed "overkill".</p>
 <p>Support for FALCON signatures will be introduced first, with the intention of adding other post-quantum
 algorithms as they are approved. By way of comparison, FALCON signatures are roughly 20x larger than Schnorr signatures.
 FALCON has recently been approved by NIST. NIST approval streamlines implementations through establishing
@@ -272,9 +273,9 @@ time-tested, and well-reviewed. Lattice cryptography is relatively new and intro
 Bitcoin, but their signatures are smaller and might be considered by some to be an adequate alternative to hash-based
 signatures.</p>
 <p>The reason multiple cryptosystems are included is in the interest of supporting hybrid cryptography, especially for
-high value outputs, such as cold wallets used by exchanges. To improve the viability of the activation client, and
-adoption by wallets and libraries, a library akin to libsecp256k1 will be developed to support the new PQC
-cryptosystems, called libbitcoinpqc.</p>
+high value outputs, such as cold wallets used by exchanges. To improve the viability of the activation client and
+adoption by wallets and libraries, a library akin to libsecp256k1 will be developed. This library, libbitcoinpqc,
+will support the new PQC cryptosystems and can be used as a reference for other language-native implementations.</p>
 <p>In the distant future, following the implementation of the P2QRH output type in a QuBit soft fork, there will likely
 be a need for Pay to Quantum Secure (P2QS) addresses. A distinction is made between cryptography that's merely resistant
 to quantum attack, and cryptography that's secured by specialized quantum hardware. P2QRH is resistant to quantum
@@ -331,16 +332,32 @@ as that would affect the consensus of their block. A CRQC operator is economical
 spendable public key that matched arbitrary signature data due to the cost of that computation. That is because the
 cost of such a computation could prove quite substantial, rather than simply putting the arbitrary data within a
 Taproot witness.</p>
-<h4> Hash Computation </h4>
-<p>If there is only a single public key, the hash is computed as the HASH256 of the public key, as if it were a
-merkle root.</p>
+<h4> Key Type Bitmask </h4>
+<p>The key type bitmask is a 1-byte value that indicates the type of key used in the commitment. It is encoded as follows:</p>
+<ul>
+<li>0x01 - Key type 0 - secp256k1</li>
+<li>0x02 - Key type 1 - FALCON-512</li>
+<li>0x04 - Key type 2 - CRYSTALS-Dilithium Level I</li>
+<li>0x08 - Key type 3 - SPHINCS+-128s</li>
+<li>0x10 - Unused</li>
+<li>0x20 - Unused</li>
+<li>0x40 - Unused</li>
+<li>0x80 - Reserved for if additional key types are added in the future</li>
+</ul>
+<p>Example key type bitmask using all supported key types:</p>
+<p>0x01 | 0x02 | 0x04 | 0x08 = 0x0F</p>
+<h4> Hash Commitment </h4>
+<p>If there is only a single public key, the hash is computed as the HASH256 of the public key, as a commitment to the
+merkle root of a binary tree of public key hashes.</p>
 <p>In order to support multiple keys, as in the context of multisig or singlesig hybrid cryptography, the hash is
-computed as a merkle tree of multiple public key hashes:</p>
+computed as a sparse merkle tree of multiple public key hashes:</p>
 <ol>
 <li>For each public key, compute its HASH256</li>
 <li>Pair the hashes and compute HASH256 of their concatenation</li>
 <li>Continue pairing and hashing until reaching a single root hash</li>
-<li>The final hash is the merkle root</li>
+<li>Compute the merkle root</li>
+<li>Prepend key type bitmask and threshold to the root hash</li>
+<li>Compute the HASH256 of the result</li>
 </ol>
 <p>For example with 4 public keys:</p>
 <pre><code>  h1 = HASH256(pubkey1)
@@ -353,34 +370,53 @@ computed as a merkle tree of multiple public key hashes:</p>
 </code></pre>
 <pre><code>  root = HASH256(h12 &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; h34)
 </code></pre>
+<pre><code>  commitment = key_type_bitmask &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; threshold &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; root
+</code></pre>
+<pre><code>  hash = HASH256(commitment)
+</code></pre>
 <p>When spending, if a public key hash is provided in the attestation with an empty signature, that hash will be used
-directly in the merkle tree computation rather than hashing the full public key. This allows excluding unused public
-keys from the transaction while still proving they were part of the original commitment.</p>
-<p>This merkle tree construction creates an efficient cryptographic commitment to multiple public keys while enabling
+directly in the merkle tree computation rather than hashing the full public key. This allows unused public keys to be
+excluded from the transaction while still proving they were part of the original commitment.</p>
+<p>The merkle tree construction creates an efficient cryptographic commitment to multiple public keys while enabling
 selective disclosure.</p>
-<p>This allows for inclusion of a <a href="/114" target="_blank">BIP-114</a> Taproot
+<p>A threshold is provided to indicate the number of signatures required to spend the output. This is used in the
+cryptographic commitment in the merkle tree hash computation and revealed in the attestation when spent.</p>
+<p>Only a single 32-byte X-only secp256k1 public key can be provided as key type 0. There are a few reasons for this:</p>
+<ol>
+<li>It maintains Taproot compatibility by removing ambiguity which key is representative of the Taptree.</li>
+<li>It prevents abuse of public keys to store arbitrary data once quantum computing is ubiquitous.</li>
+<li>When a secp256k1 key is specified in the key type bitmask, how many keys it commits to is unambiguous.</li>
+<li>If multiple keys need to be committed to, they must be aggregated, which saves on transaction size.</li>
+</ol>
+<p>This design maintains compatibility for <a href="/114" target="_blank">BIP-114</a> Taproot
 Merkelized Alternative Script Tree (MAST) merkle root in the attestation, which makes P2QRH a quantum-resistant
 version of Taproot transactions.</p>
+<p>In a multisig context, aside from secp256k1 keys, the number of keys provided in the attestation is variable and must
+meet the threshold as committed to in the merkle tree hash computation and revealed in the attestation.</p>
+<p>If an implementation for public key or signature aggregation for PQC algorithms is developed, key and signature
+aggregation must become the default behavior for P2QRH.</p>
+<p>When the address is generated, all public keys must be known in advance, and they must be sorted, first by key type,
+then by public key value, so as to be deterministic.</p>
+<p>The key count does not need to be provided for PQC keys because the key type bitmask and threshold are sufficient to
+validate a multisig transaction.</p>
+<p>In a singlesig context, multiple PQC keys can be provided, but the key type bitmask and threshold must still also be
+provided to be consistent with the multisig semantics. The threshold will be set as 0x01, and the key type bitmask will
+indicate how many keys of each type are present.</p>
 <h3> Transaction Serialization </h3>
 <p>Following BIP-141, a new transaction serialization format is introduced to include an attestation field after the witness field:</p>
 <pre><code>  [nVersion][marker][flag][txins][txouts][witness][attestation][nLockTime]
 </code></pre>
 <ul>
-<li>
-<p><code>marker</code>: <code>0x00</code> (same as SegWit)</p>
-</li>
-<li>
-<p><code>flag</code>:</p>
+<li><code>marker</code>: <code>0x00</code> (same as SegWit)</li>
+<li><code>flag</code>:
 <ul>
 <li><code>0x02</code> (indicates the presence of attestation data only)</li>
 <li><code>0x03</code> (indicates the presence of both witness and attestation data)</li>
 </ul>
 </li>
-<li>
-<p><code>attestation</code>: Contains the quantum-resistant public keys and signatures.</p>
-</li>
+<li><code>attestation</code>: Contains the quantum-resistant public keys and signatures.</li>
 </ul>
-<h3> Transaction ID </h3>
+<h3> Quantum Transaction ID (qtxid) </h3>
 <p>The transaction ID is computed as the HASH256 of the serialized transaction, including the attestation and witness
 (if a witness is present). When decoded, this is called the qtxid, which will differ from the txid and wtxid if an
 attestation is present.</p>
@@ -410,22 +446,55 @@ must count the number of inputs present in the transaction.</p>
 <h3> Signature Algorithms </h3>
 <p>The specific quantum-resistant signature algorithm used is inferred from the length of the public key.
 Implementations must recognize the supported algorithms and validate accordingly.</p>
-<p>Supported PQC algorithms and their NIST Level V parameters:</p>
+<p>Supported PQC algorithms and their NIST Level I parameters:</p>
 <ul>
-<li><strong>SPHINCS+-256f:</strong></li>
+<li><strong>secp256k1 - BIP-340 - Schnorr + X-Only</strong>
+<ul>
+<li>Key Type 0</li>
+<li>Public Key Length: 32 bytes</li>
+<li>Signature Length: 64 bytes</li>
+<li>Total Size: 96 bytes</li>
+<li>Cycles to sign: 42,000 (EdDSA)</li>
+<li>Cycles to verify: 130,000 (EdDSA)</li>
 </ul>
-<pre><code>  * Public Key Length: 64 bytes
-  * Signature Length: 49,856 bytes
-* &#x27;&#x27;&#x27;CRYSTALS-Dilithium Level 5:&#x27;&#x27;&#x27;
-  * Public Key Length: 2,592 bytes
-  * Signature Length: 4,595 bytes
-* &#x27;&#x27;&#x27;FALCON-1024:&#x27;&#x27;&#x27;
-  * Public Key Length: 1,793 bytes
-  * Signature Length: 1,280 bytes
-</code></pre>
+</li>
+<li><strong>FN-DSA-512 - FIPS 206 - FALCON-512:</strong>
+<ul>
+<li>Key Type 1</li>
+<li>Public Key Length: 897 bytes</li>
+<li>Signature Length: 667 bytes</li>
+<li>Total Size: 1,564 bytes</li>
+<li>Cycles to sign: 1,009,764</li>
+<li>Cycles to verify: 81,036</li>
+</ul>
+</li>
+<li><strong>ML-DSA-44 - FIPS 204 - CRYSTALS-Dilithium Level I:</strong>
+<ul>
+<li>Key Type 2</li>
+<li>Public Key Length: 1,312 bytes</li>
+<li>Signature Length: 2,420 bytes</li>
+<li>Total Size: 3,732 bytes</li>
+<li>Cycles to sign: 333,013</li>
+<li>Cycles to verify: 118,412</li>
+</ul>
+</li>
+<li><strong>SLH-DSA-SHAKE-128s - FIPS 205 - SPHINCS+-128s:</strong>
+<ul>
+<li>Key Type 3</li>
+<li>Public Key Length: 32 bytes</li>
+<li>Signature Length: 7,856 bytes</li>
+<li>Total Size: 7,888 bytes</li>
+<li>Cycles to sign: 4,682,570,992</li>
+<li>Cycles to verify: 4,764,084</li>
+</ul>
+</li>
+</ul>
 <p>Implementations must reject public keys and signatures that do not match expected lengths for supported algorithms.</p>
 <p>If a new algorithm is added, and one of the byte sizes overlaps, then an additional byte should be prepended to the
 new algorithm's public key length that indicates the specific algorithm used.</p>
+<p>A bitmask is used to indicate the algorithm used for each public key and signature pair. The bitmask is enumerates based on
+the key type as indicated above. This is used in the cryptographic commitment in the merkle tree hash computation and
+revealed in the attestation when spent.</p>
 <h3> Script Validation </h3>
 <p>To spend a P2QRH output, the following conditions must be met:</p>
 <ol>
@@ -444,17 +513,22 @@ new algorithm's public key length that indicates the specific algorithm used.</p
 </ul>
 <ol start="3">
 <li>For multi-signature schemes, all required public keys and signatures must be provided for that input within the
-attestation. Public keys that are not needed can be excluded by including their hash in the attestation accompanied
-with an empty signature. This includes classical Schnorr signatures.</li>
+attestation. Public keys that are not needed or available can be selectively disclosed by including their hash in the
+attestation accompanied with an empty signature by providing a 0x00 signature length byte.</li>
 </ol>
 <h4> Sighash Calculation </h4>
-<p>The sighash for P2QRH outputs follows the same procedure as defined in BIP-0143 for SegWit transactions:</p>
+<p>The sighash for P2QRH outputs follows the same procedure as defined in <a href="/341" target="_blank">BIP-341</a> for Taproot transactions:</p>
 <ul>
-<li><strong>Hash Prevouts:</strong> Computed over the previous outputs being spent.</li>
-<li><strong>Hash Sequence:</strong> Computed over the sequence fields.</li>
-<li><strong>Hash Outputs:</strong> Computed over the outputs of the transaction.</li>
+<li><strong>Signature Message:</strong> A single-SHA256 of a tagged hash with the tag "TapSighash", containing transaction data.</li>
+<li><strong>Tagged Hash:</strong> Computed as H(tag || tag || data) where H is SHA256 and tag is the SHA256 of the tag name.</li>
+<li><strong>Key Data:</strong> In addition to transaction data, the sighash includes the spent output's scriptPubKey.</li>
+<li><strong>Extension Fields:</strong> Specific data is included or excluded from the sighash based on the sighash flag.</li>
 </ul>
-<p>The message to be signed includes these hashes, ensuring transaction malleability is prevented.</p>
+<p>This signature hash construction ensures transaction malleability is prevented while providing flexibility through
+different sighash types (DEFAULT, ALL, NONE, SINGLE, and ANYONECANPAY variants). The exact computation follows the
+procedure specified in BIP-341 to maintain compatibility with Taproot signatures.</p>
+<p>If a sighash flag other than DEFAULT is needed, it can be placed in the transaction witness. In this case, it will be
+the only field in the witness.</p>
 <h4> Signature Verification </h4>
 <p>Signature verification is as follows:</p>
 <ol>
@@ -478,44 +552,44 @@ with an empty signature. This includes classical Schnorr signatures.</li>
 <p>Verify each signature against the corresponding public key and the sighash.</p>
 </li>
 <li>
-<p>Ensure that the signature algorithm used matches the expected lengths for NIST Level V security, and is supported by
+<p>Ensure that the signature algorithm used matches the expected lengths for NIST Level I security, and is supported by
 the implementation.</p>
 </li>
 </ol>
 <h4> Attestation Parsing Example </h4>
-<p>Signing for a single input using both FALCON-1024 and secp256k1 Schnorr:</p>
+<p>Signing for a single input using both secp256k1 Schnorr and FALCON-512:</p>
 <p>Number of public keys:</p>
 <pre><code>  [num_pubkeys]: 0x02
 </code></pre>
 <p>Pubkey 1:</p>
-<pre><code>  [pubkey_length]: 0x0701 (1793 bytes)
-  [pubkey]: public_key_falcon_1024
-</code></pre>
-<p>Pubkey 2:</p>
 <pre><code>  [pubkey_length]: 0x20 (32 bytes)
   [pubkey]: public_key_secp256k1
+</code></pre>
+<p>Pubkey 2:</p>
+<pre><code>  [pubkey_length]: 0x0701 (1793 bytes)
+  [pubkey]: public_key_falcon_512
 </code></pre>
 <p>Number of signatures:</p>
 <pre><code>  [num_signatures]: 0x02
 </code></pre>
 <p>Signature 1:</p>
-<pre><code>  [signature_length]: 0x0500 (1280 bytes)
-  [signature]: signature_falcon_1024
-</code></pre>
-<p>Signature 2:</p>
 <pre><code>  [signature_length]: 0x40 (64 bytes)
   [signature]: signature_secp256k1
+</code></pre>
+<p>Signature 2:</p>
+<pre><code>  [signature_length]: 0x0500 (1280 bytes)
+  [signature]: signature_falcon_512
 </code></pre>
 <p>Note: This contrasts with multisig inputs, where the attestation structure repeats for each public key and signature.</p>
 <h3> Compatibility with BIP-141 </h3>
 <p>By adhering to the SegWit transaction structure and versioning, P2QRH outputs are compatible with existing transaction
 processing rules. Nodes that do not recognize SegWit version 3 will treat these outputs as anyone-can-spend but, per
-BIP-141, will not relay or mine such transactions.</p>
+<a href="/141" target="_blank">BIP-141</a>, will not relay or mine such transactions.</p>
 <h3> Usage Considerations </h3>
 <h4> Transaction Size and Fees </h4>
 <p>Quantum-resistant signatures are significantly larger than traditional signatures, increasing transaction size and the
 fees required. Users and wallet developers should be aware of this and plan accordingly.</p>
-<p>For example, for CRYSTALS-Dilithium Level V, a single signature is 4,595 bytes, a substantial increase over current
+<p>For example, for CRYSTALS-Dilithium Level I, a single public key is 1,312 bytes, and a signature is 2,420 bytes, resulting in a substantial increase over current
 ECDSA or Schnorr signatures.</p>
 <h4> Performance Impact </h4>
 <p>Verification of quantum-resistant signatures will be computationally more intensive, and any attestation discount will
@@ -584,6 +658,7 @@ seeds to act as the authoritative secret when signing. These measures are deemed
 <h2> Changelog </h2>
 <p>To help implementors understand updates to this BIP, we keep a list of substantial changes.</p>
 <ul>
+<li>2025-03-12 - Add verification times for each algorithm. 256 -&gt; 128 (NIST V -&gt; NIST I). Add key type bitmask. Clarify multisig semantics.</li>
 <li>2025-02-23 - More points of clarification from review. Update dead link.</li>
 <li>2025-01-20 - Remove SQIsign from consideration due to significant performance concerns. Refactor language from long-range attack to long-exposure so as to not be confused with the language around block re-org attacks.</li>
 <li>2024-12-18 - Assigned BIP number.</li>
@@ -604,5 +679,21 @@ well to those who took the time to review and contribute, including Jeff Bride, 
 Dallaire-Demers, Ethan Heilman, Jon Atack, Jameson Lopp, Murchandamus, and Vojtěch Strnad.</p>
 
         </article>
+    </div>
+
+
+            <hr class="border-slate-700" />
+
+            <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
+                <div class="flex items-center space-x-2">
+                    <p class="font-bold">Updated</p>
+                    <p class="font-bold">2025-03-13</p>
+                </div>
+                <p>See an issue with rendering or formatting? Submit an issue on <a href="https://github.com/nickmonad/bips.dev" target="_blank">GitHub</a></p>
+                <p>Do you find this site useful? Please consider <a href="https://buy.tryspeed.com/plink_live_lyek4a2yW2Sn2wfA" target="_blank">donating</a> some sats to support ongoing development.</p>
+                <p><a href="/">bips.dev</a> is presented by <a href="https://nickmonad.blog" target="_blank">nickmonad</a></p>
+                <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). This website makes no claim of ownership.</p>
+            </div>
+        </div>
     </div>
 </html>

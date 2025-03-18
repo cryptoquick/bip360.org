@@ -2,9 +2,10 @@
 
 ## build
 
-In bips.dev, with submodule pointed to cryptoquick/bips:
+In bips.dev, with submodule pointed to cryptoquick/bips, p2qrh branch:
 
 ```sh
+git submodule update --recursive --init
 ./scripts/bips.sh
 ./scripts/static.sh
 ./scripts/generate.sh

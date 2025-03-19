@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -321,14 +320,39 @@ intermediate solution that provides meaningful protection against quantum threat
 <p>To integrate P2QRH into existing wallet software and scripts, we introduce a new output descriptor function
 <code>qrh()</code>. This function represents a P2QRH output, similar to how <code>wpkh()</code> and <code>tr()</code>
 are used for P2WPKH and P2TR outputs, respectively.</p>
-<p>The <code>qrh()</code> function takes the HASH256 of the concatenated HASH256 of the quantum-resistant public keys as
-its argument. For example:</p>
-<pre><code>  qrh(HASH256(HASH256(pubkey1) &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; HASH256(pubkey2) &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; ...))
+<p>The <code>qrh()</code> function takes a threshold value and multiple key specifications grouped by key type. The format is:</p>
+<pre><code>  qrh(threshold, keytype(0x01, [hash1, hash2, ...]), keytype(0x02, [hash1, hash2, ...]), ...)
 </code></pre>
-<p>This function allows wallets to manage P2QRH addresses and outputs while accommodating multiple public keys of varying
-lengths, such as in multisig schemes, while keeping the public keys hidden until the time of spending. At a minimum,
-there should be two public keys in a P2QRH output: one key that makes use of classical cryptography, and one that makes use
-of a PQC algorithm chosen within the wallet.</p>
+<p>Where:</p>
+<ul>
+<li><code>threshold</code> is an integer specifying the minimum number of signatures required</li>
+<li><code>keytype</code> is the hex value representing the key type (0x01 for secp256k1, 0x02 for FALCON-512, 0x04 for CRYSTALS-Dilithium Level I, 0x08 for SPHINCS+-128s)</li>
+<li><code>&lt;a href="hash1," target="_blank"&gt;hash2, ...&lt;/a&gt;</code> is an array of HASH256 hashes of public keys for the corresponding algorithm type</li>
+</ul>
+<p>For example:</p>
+<pre><code>  qrh(3, keytype(0x01, hash256(secp256k1_pubkey1), hash256(secp256k1_pubkey2), hash256(secp256k1_pubkey3), secp256k1_pubkey4_hash, secp256k1_pubkey5_hash),
+      keytype(0x02, hash256(falcon_pubkey1), hash256(falcon_pubkey2), hash256(falcon_pubkey3), falcon_pubkey4_hash, falcon_pubkey5_hash),
+      keytype(0x04, hash256(dilithium_pubkey1), hash256(dilithium_pubkey2), hash256(dilithium_pubkey3), dilithium_pubkey4_hash, dilithium_pubkey5_hash),
+      keytype(0x08, hash256(sphincs_pubkey1), hash256(sphincs_pubkey2), hash256(sphincs_pubkey3), sphincs_pubkey4_hash, sphincs_pubkey5_hash))
+</code></pre>
+<p>This represents a 3-of-5 multisig for each key type, with a total of 20 keys: 5 keys per type (3 full public keys and 2
+hashes) across 4 different key types.</p>
+<p>Internally, the descriptor computes the HASH256 of the concatenated HASH256 of all the quantum-resistant public keys,
+with the threshold and key type bitmask prepended. For each key in the descriptor:</p>
+<ul>
+<li>If it is already a hash (indicated in the descriptor), it is used directly</li>
+<li>If it is a public key, HASH256 is applied to it first</li>
+</ul>
+<p>This approach ensures that all items in the vector are HASH256 values, whether they originated from raw public keys or
+were provided as hashes. During spending, this allows for selective disclosure of public keys, where some keys can
+remain hidden (represented only by their hashes) while others are fully revealed with their corresponding public keys.
+This flexibility is particularly valuable in multisig schemes where not all keys need to be revealed to satisfy the
+threshold requirement. At a minimum, there should be two different key types in a P2QRH output: one key that makes use
+of classical cryptography, and one that makes use of a PQC algorithm chosen within the wallet.</p>
+<p>Also, it's important to note that order of keys and hashes in the descriptor matters and is based on the original
+public key values, in addition to the key type. Additionally, qrh() does not compile to script, but instead, describes
+what's needed to compute the scriptPubKey hash commitment and also to reveal the attestation needed to spend the
+output.</p>
 <h3> Address Format </h3>
 <p>P2QRH uses SegWit version 3 outputs, resulting in addresses that start with <code>bc1r</code>, following
 <a href="/173" target="_blank">BIP-173</a>. Bech32 encoding maps version 3 to the
@@ -686,7 +710,7 @@ seeds to act as the authoritative secret when signing. These measures are deemed
 <h2> Changelog </h2>
 <p>To help implementors understand updates to this BIP, we keep a list of substantial changes.</p>
 <ul>
-<li>2025-03-18 - Correct inconsistencies in commitment and attestation structure. Switch from merkle tree commitment to sorted vector hash commitment.</li>
+<li>2025-03-18 - Correct inconsistencies in commitment and attestation structure. Switch from merkle tree commitment to sorted vector hash commitment. Update descriptor format.</li>
 <li>2025-03-12 - Add verification times for each algorithm. 256 -&gt; 128 (NIST V -&gt; NIST I). Add key type bitmask. Clarify multisig semantics.</li>
 <li>2025-02-23 - More points of clarification from review. Update dead link.</li>
 <li>2025-01-20 - Remove SQIsign from consideration due to significant performance concerns. Refactor language from long-range attack to long-exposure so as to not be confused with the language around block re-org attacks.</li>
@@ -716,7 +740,7 @@ Dallaire-Demers, Ethan Heilman, Jon Atack, Jameson Lopp, Murchandamus, and VojtÄ
             <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
                 <div class="flex items-center space-x-2">
                     <p class="font-bold">Updated</p>
-                    <p class="font-bold">2025-03-18</p>
+                    <p class="font-bold">2025-03-19</p>
                 </div>
                 <p>See an issue with rendering or formatting? Submit an issue on <a href="https://github.com/nickmonad/bips.dev" target="_blank">GitHub</a></p>
                 <p>Do you find this site useful? Please consider <a href="https://buy.tryspeed.com/plink_live_lyek4a2yW2Sn2wfA" target="_blank">donating</a> some sats to support ongoing development.</p>

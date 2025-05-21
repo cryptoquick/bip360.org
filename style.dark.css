@@ -1,0 +1,148 @@
+/* Basic dark mode support for index.html without importing style.css */
+/* Light/dark mode base styles */
+
+/* Base variables */
+:root {
+  --pagefind-ui-primary: #334155;
+  --pagefind-ui-text: #334155;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 4px;
+  
+  /* Light mode colors */
+  --bg-color: #ffffff;
+  --bg-header: #ffffff;
+  --text-color: #334155;
+  --heading-color: #111827;
+  --border-color: #e5e7eb;
+}
+
+/* Dark mode variables */
+html.dark {
+  --pagefind-ui-primary: #d1d5db;
+  --pagefind-ui-text: #d1d5db;
+  --pagefind-ui-background: #18181b;
+  --pagefind-ui-border: #152028;
+  
+  /* Dark mode colors */
+  --bg-color: rgb(24 24 27);
+  --bg-header: rgb(39 39 42);
+  --text-color: rgb(209 213 219);
+  --heading-color: rgb(243 244 246);
+  --border-color: rgb(55 65 81);
+}
+
+/* Set base styles using variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+header {
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--heading-color);
+}
+
+/* Base element styles */
+mark {
+  background-color: #ff9900 !important;
+  color: #6b7280 !important;
+}
+
+a {
+  font-weight: 700;
+  text-decoration-color: #f90;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: #ff9900;
+}
+
+/* Navigation links */
+.nav-link {
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #ff9900 !important;
+}
+
+/* Bitcoin accent colors */
+.text-btc-orange {
+  color: #ff9900 !important;
+}
+
+.border-btc-orange {
+  border-color: #ff9900 !important;
+}
+
+/* Sections with dark mode support */
+.bg-white {
+  background-color: var(--bg-color);
+}
+
+.dark\:bg-zinc-800,
+html.dark .bg-white {
+  background-color: var(--bg-header);
+}
+
+.dark\:bg-zinc-900 {
+  background-color: var(--bg-color);
+}
+
+/* Text colors */
+.text-gray-700,
+.text-gray-900,
+.text-slate-700 {
+  color: var(--text-color);
+}
+
+.dark\:text-gray-100,
+.dark\:text-gray-300 {
+  color: var(--text-color);
+}
+
+html.dark .text-gray-900 {
+  color: var(--heading-color);
+}
+
+html.dark .text-gray-700,
+html.dark .text-slate-700 {
+  color: var(--text-color);
+}
+
+/* Border colors */
+.border-gray-200,
+.border-b-gray-200 {
+  border-color: var(--border-color);
+}
+
+.dark\:border-gray-700,
+.dark\:border-b-gray-700 {
+  border-color: var(--border-color);
+}
+
+/* Display utilities - now hard-coded for specific elements */
+html.dark #toggleDark_light {
+  display: block;
+}
+
+html.dark #toggleDark_dark {
+  display: none;
+}
+
+html:not(.dark) #toggleDark_light {
+  display: none;
+}
+
+html:not(.dark) #toggleDark_dark {
+  display: block;
+}

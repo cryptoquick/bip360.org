@@ -25,28 +25,36 @@
     <!-- <link rel="stylesheet" href="/style.css" /> -->
     <!-- <link rel="stylesheet" href="/style.tailwind.css" /> -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'btc-orange': '#ff9900',
-                    }
-                }
-            },
-            safelist: [
-                'hover:text-btc-orange',
-                'text-btc-orange',
-                'bg-btc-orange',
-                'border-btc-orange',
-                'decoration-btc-orange'
-            ]
-        }
-    </script>
+    <link rel="stylesheet" href="style.dark.css" />
 
     <script>
         // setup plausible function for custom events
         window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) }
+
+        // Simple dark mode implementation
+        function toggleDarkMode(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('toggleDark_light').style.display = 'block';
+                document.getElementById('toggleDark_dark').style.display = 'none';
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('toggleDark_light').style.display = 'none';
+                document.getElementById('toggleDark_dark').style.display = 'block';
+            }
+        }
+
+        // Initialize dark mode based on localStorage or system preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                toggleDarkMode('dark');
+            } else {
+                toggleDarkMode('light');
+            }
+        });
     </script>
 
     <style>
@@ -59,6 +67,13 @@
             --pagefind-ui-background: #ffffff;
             --pagefind-ui-border-width: 1px;
             --pagefind-ui-border-radius: 4px;
+        }
+
+        html.dark {
+            --pagefind-ui-primary: #d1d5db;
+            --pagefind-ui-text: #d1d5db;
+            --pagefind-ui-background: #18181b;
+            --pagefind-ui-border: #152028;
         }
 
         mark {
@@ -82,35 +97,96 @@
         .border-btc-orange {
             border-color: #ff9900 !important;
         }
+
+        a {
+            font-weight: 700;
+            text-decoration-color: #f90;
+            text-decoration-line: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 2px;
+        }
+
+        a:hover {
+            --tw-text-opacity: 1;
+            color: rgb(255 153 0 / var(--tw-text-opacity));
+        }
+
+        /* Dark mode colors */
+        .dark .dark\:text-gray-100 {
+            color: rgb(243 244 246);
+        }
+
+        .dark .dark\:text-gray-300 {
+            color: rgb(209 213 219);
+        }
+
+        .dark .dark\:text-gray-400 {
+            color: rgb(156 163 175);
+        }
+
+        .dark .dark\:bg-zinc-800 {
+            background-color: rgb(39 39 42);
+        }
+
+        .dark .dark\:bg-zinc-900 {
+            background-color: rgb(24 24 27);
+        }
+
+        .dark .dark\:border-gray-700 {
+            border-color: rgb(55 65 81);
+        }
     </style>
 </head>
 
-<body class="bg-white">
-    <header class="bg-white border-gray-200 border-b-1">
+<body class="bg-white dark:bg-zinc-900">
+    <header
+        class="bg-white dark:bg-zinc-800 border-gray-200 dark:border-gray-700 border-b border-b-gray-200 dark:border-b-gray-700">
         <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1">
                 &nbsp;
             </div>
             <div class="lg:flex lg:gap-x-12">
-                <a href="index.html" class="text-sm/6 font-semibold text-btc-orange nav-link">INTRO</a>
+                <a href="index.html" class="text-sm/6 font-semibold text-btc-orange nav-link"
+                    style="text-decoration: none;">INTRO</a>
                 <a href="bip360.html"
-                    class="text-sm/6 font-semibold text-gray-900 hover:text-btc-orange nav-link">BIP360</a>
-                <a href="hourglass.html"
-                    class="text-sm/6 font-semibold text-gray-900 hover:text-btc-orange nav-link">HOURGLASS</a>
+                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link"
+                    style="text-decoration: none;">BIP360</a>
+                <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank"
+                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link"
+                    style="text-decoration: none;">HOURGLASS</a>
                 <a href="media.html"
-                    class="text-sm/6 font-semibold text-gray-900 hover:text-btc-orange nav-link">MEDIA</a>
+                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link"
+                    style="text-decoration: none;">MEDIA</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">&nbsp;</div>
         </nav>
     </header>
     <div class="container mx-auto flex justify-center">
         <div data-pagefind-body
-            class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-6 space-y-10 text-slate-700">
-
+            class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-6 space-y-10 text-slate-700 dark:text-gray-300">
             <div class="flex flex-col space-y-4 pt-2 md:pt-2">
-                <div class="bg-white px-6 lg:px-8">
-                    <div class="mx-auto max-w-3xl text-base/7 text-gray-700">
-                        <h1 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
+                <div class="bg-white dark:bg-zinc-900 px-6 lg:px-8">
+                    <div class="mx-auto max-w-3xl text-base/7 text-gray-700 dark:text-gray-300">
+                        <div class="flex">
+                            <!-- Sun icon (show in dark mode, clicking switches to light) -->
+                            <svg id="toggleDark_light" class="w-6 h-6 hover:cursor-pointer"
+                                onclick="toggleDarkMode('light')"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                            </svg>
+                            <!-- Moon icon (show in light mode, clicking switches to dark) -->
+                            <svg id="toggleDark_dark" class="w-6 h-6 hover:cursor-pointer"
+                                onclick="toggleDarkMode('dark')"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                            </svg>
+                        </div>
+                        <h1
+                            class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-gray-100 sm:text-5xl">
                             BIP360</h1>
                         <h3 class="mt-2 text-2xl font-semibold tracking-tight text-pretty text-btc-orange sm:text-3xl">
                             to add quantum-resistant addresses to Bitcoin
@@ -119,12 +195,12 @@
                         <div class="mt-4 max-w-2xl">
                             <p>
                                 BIP360 is a proposal to introduce post-quantum cryptography into Bitcoin—was authored by
-                                Hunter Beast to address Bitcoin’s most pressing quantum-vulnerability: quantum
+                                Hunter Beast to address Bitcoin's most pressing quantum-vulnerability: quantum
                                 vulnerable addresses.
                             </p>
 
                             <p class="mt-4">
-                                BIP360 introduces “pay-to-quantum-resistant-hash” address types—introduces 3 new
+                                BIP360 introduces "pay-to-quantum-resistant-hash" address types—introduces 3 new
                                 signature algorithms with quantum resistant properties to protect Bitcoin at varying
                                 levels.
                             </p>
@@ -132,14 +208,14 @@
 
                         <div class="mt-6 max-w-2xl">
                             <figure class="mt-10 border-l border-btc-orange pl-9">
-                                <blockquote class="font-semibold text-gray-900">
-                                    <p>At present, Bitcoin addresses—especially, but not limited to, Taproot & Satoshi’s
+                                <blockquote class="font-semibold text-gray-900 dark:text-gray-100">
+                                    <p>At present, Bitcoin addresses—especially, but not limited to, Taproot & Satoshi's
                                         coins—are not quantum resistant, and are vulnerable to attack in the event of
                                         sufficient advancement in quantum computing. </p>
                                     <p class="mt-4">
-                                        The development of Google’s “Willow” quantum chip, as well as Microsoft’s
+                                        The development of Google's "Willow" quantum chip, as well as Microsoft's
                                         Majorana 1 chip, has shed light on this vulnerability in recent news—and has
-                                        called into question our time left until “Q Day.”
+                                        called into question our time left until "Q Day."
                                     </p>
 
                                 </blockquote>
@@ -147,11 +223,13 @@
                         </div>
 
                         <div class="mt-12 max-w-2xl">
-                            <h2 class="text-3xl font-semibold tracking-tight text-pretty text-gray-900">MAKE BITCOIN
+                            <h2
+                                class="text-3xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-gray-100">
+                                MAKE BITCOIN
                                 QUANTUM RESISTANT</h2>
                             <p class="mt-4">Industry roadmaps—led by companies including IBM, Google, Microsoft, Amazon,
                                 and Intel—suggest that quantum computers may be able to decrypt ECDSA cryptography used
-                                for Bitcoin’s public/private key encryption in as little as 2-5 years. The US federal
+                                for Bitcoin's public/private key encryption in as little as 2-5 years. The US federal
                                 government, additionally, has issued a mandate to phase out use of ECDSA cryptography
                                 entirely by 2035.</p>
                             <p class="mt-4">While the amount of time we have to prepare for a quantum event is
@@ -164,7 +242,7 @@
                 </div>
             </div>
 
-            <section class="isolate overflow-hidden bg-white px-6 lg:px-8">
+            <section class="isolate overflow-hidden bg-white dark:bg-zinc-900 px-6 lg:px-8">
                 <div class="relative mx-auto max-w-2xl py-2 sm:py-2 lg:max-w-4xl">
                     <figure class="grid grid-cols-1 items-center gap-x-6 gap-y-6 lg:gap-x-10">
                         <div class="relative col-span-2 lg:col-start-1 lg:row-start-2">
@@ -174,7 +252,7 @@
                                     d="M65.5697 118.507L65.8918 118.89C68.9503 116.314 71.367 113.253 73.1386 109.71C74.9162 106.155 75.8027 102.28 75.8027 98.0919C75.8027 94.237 75.16 90.6155 73.8708 87.2314C72.5851 83.8565 70.8137 80.9533 68.553 78.5292C66.4529 76.1079 63.9476 74.2482 61.0407 72.9536C58.2795 71.4949 55.276 70.767 52.0386 70.767C48.9935 70.767 46.4686 71.1668 44.4872 71.9924L44.4799 71.9955L44.4726 71.9988C42.7101 72.7999 41.1035 73.6831 39.6544 74.6492C38.2407 75.5916 36.8279 76.455 35.4159 77.2394L35.4047 77.2457L35.3938 77.2525C34.2318 77.9787 32.6713 78.3634 30.6736 78.3634C29.0405 78.3634 27.5131 77.2868 26.1274 74.8257C24.7483 72.2185 24.0519 69.2166 24.0519 65.8071C24.0519 60.0311 25.3782 54.4081 28.0373 48.9335C30.703 43.4454 34.3114 38.345 38.8667 33.6325C43.5812 28.761 49.0045 24.5159 55.1389 20.8979C60.1667 18.0071 65.4966 15.6179 71.1291 13.7305C73.8626 12.8145 75.8027 10.2968 75.8027 7.38572C75.8027 3.6497 72.6341 0.62247 68.8814 1.1527C61.1635 2.2432 53.7398 4.41426 46.6119 7.66522C37.5369 11.6459 29.5729 17.0612 22.7236 23.9105C16.0322 30.6019 10.618 38.4859 6.47981 47.558L6.47976 47.558L6.47682 47.5647C2.4901 56.6544 0.5 66.6148 0.5 77.4391C0.5 84.2996 1.61702 90.7679 3.85425 96.8404L3.8558 96.8445C6.08991 102.749 9.12394 108.02 12.959 112.654L12.959 112.654L12.9646 112.661C16.8027 117.138 21.2829 120.739 26.4034 123.459L26.4033 123.459L26.4144 123.465C31.5505 126.033 37.0873 127.316 43.0178 127.316C47.5035 127.316 51.6783 126.595 55.5376 125.148L55.5376 125.148L55.5477 125.144C59.5516 123.542 63.0052 121.456 65.9019 118.881L65.5697 118.507Z" />
                                 <use href="#b56e9dab-6ccb-4d32-ad02-6b4bb5d9bbeb" x="86" />
                             </svg>
-                            <blockquote class="text-xl/8 font-semibold text-gray-900 sm:text-2xl/9">
+                            <blockquote class="text-xl/8 font-semibold text-gray-900 dark:text-gray-100 sm:text-2xl/9">
                                 <p class="italic">A smooth and effective QR transition plan for Bitcoin could take
                                     several years to execute—with more prep time inevitably leading to better security
                                     outcomes for all.</p>
@@ -185,14 +263,15 @@
                                 alt="">
                         </div>
                         <figcaption class="text-base lg:col-start-1 lg:row-start-3">
-                            <div class="font-semibold text-gray-900">Hunter Beast</div>
-                            <div class="mt-1 text-gray-500">Author of BIP360</div>
+                            <div class="font-semibold text-gray-900 dark:text-gray-100">Hunter Beast</div>
+                            <div class="mt-1 text-gray-500 dark:text-gray-400">Author of BIP360</div>
                         </figcaption>
                     </figure>
                 </div>
             </section>
 
-            <div class="bg-white py-8 sm:py-8">
+
+            <div class="bg-white dark:bg-zinc-900 pb-12">
                 <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div
                         class="relative isolate overflow-hidden bg-orange-400 px-6 py-18 shadow-2xl sm:rounded-3xl sm:px-18 xl:py-18">
@@ -227,8 +306,7 @@
                 </div>
             </div>
 
-
-            <hr class="border-orange-200" />
+            <hr class="border-slate-700" />
 
             <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
                 <div class="flex items-center space-x-2">

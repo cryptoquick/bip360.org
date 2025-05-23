@@ -1,4 +1,14 @@
 /*! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com*/
+
+/* Import fonts */
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap");
+
+:root {
+  /* Font variables */
+  --heading-font: "Oswald", sans-serif;
+  --body-font: "Roboto", sans-serif;
+}
+
 *,
 :after,
 :before {
@@ -35,6 +45,15 @@ abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
   text-decoration: underline dotted;
 }
+
+body,
+p,
+div,
+span,
+li,
+a {
+  font-family: var(--body-font);
+}
 h1,
 h2,
 h3,
@@ -43,6 +62,7 @@ h5,
 h6 {
   font-size: inherit;
   font-weight: inherit;
+  font-family: var(--heading-font);
 }
 a {
   color: inherit;

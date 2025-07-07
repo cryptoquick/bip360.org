@@ -25,11 +25,11 @@ Paste in index.html.orig
 Apply changes.patch to index.html.orig output to index.html:
 
 ```sh
-patch index.html.orig -o index.html < changes.patch
+patch bip360.html.orig -o bip360.html < changes.patch
 ```
 
 If updates to the patch file are ever needed:
 
 ```sh
-diff index.html.orig index.html > changes.patch
+diff bip360.html.orig bip360.html > changes.patch
 ```

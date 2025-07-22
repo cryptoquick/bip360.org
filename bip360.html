@@ -25,17 +25,329 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="/style.css" />
 
+    <style>
+        /* Dropdown menu styles for bip360.html */
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1 !important;
+        }
+        
+        .group:hover .group-hover\:visible {
+            visibility: visible !important;
+        }
+        
+        .group:hover .group-hover\:rotate-180 {
+            transform: rotate(180deg) !important;
+        }
+        
+        .opacity-0 {
+            opacity: 0;
+        }
+        
+        .invisible {
+            visibility: hidden;
+        }
+        
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        
+        .duration-200 {
+            transition-duration: 200ms;
+        }
+        
+        .z-50 {
+            z-index: 50;
+        }
+        
+        .w-48 {
+            width: 12rem;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .left-0 {
+            left: 0;
+        }
+        
+        .absolute {
+            position: absolute;
+        }
+        
+        .relative {
+            position: relative;
+        }
+        
+        .rounded-md {
+            border-radius: 0.375rem;
+        }
+        
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .border {
+            border-width: 1px;
+        }
+        
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        
+        .block {
+            display: block;
+        }
+        
+        /* Consolidated hover effect for zinc-700 background */
+        .hover\:bg-zinc-700:hover {
+            background-color: rgb(63 63 70) !important;
+        }
+        
+        /* Ensure dropdown text turns orange on hover */
+        .hover\:text-btc-orange:hover {
+            color: #ff9900 !important;
+        }
+        
+        html:not(.dark) .hover\:text-btc-orange:hover {
+            color: #ff9900 !important;
+        }
+        
+        .dark .hover\:text-btc-orange:hover {
+            color: #ff9900 !important;
+        }
+        
+        .ml-1 {
+            margin-left: 0.25rem;
+        }
+        
+        .w-4 {
+            width: 1rem;
+        }
+        
+        .h-4 {
+            height: 1rem;
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        /* Dark mode specific dropdown styles */
+        .dark .bg-white {
+            background-color: rgb(39 39 42) !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: rgb(55 65 81) !important;
+        }
+        
+        .dark .text-gray-900 {
+            color: rgb(243 244 246) !important;
+        }
+        
+        .dark .text-gray-100 {
+            color: rgb(243 244 246) !important;
+        }
+        
+        /* Dark mode background and text colors */
+        .dark\:bg-zinc-800 {
+            background-color: rgb(39 39 42) !important;
+        }
+        
+        .dark\:bg-zinc-900 {
+            background-color: rgb(24 24 27) !important;
+        }
+        
+        .dark\:text-gray-100 {
+            color: rgb(243 244 246) !important;
+        }
+        
+        .dark\:text-gray-300 {
+            color: rgb(209 213 219) !important;
+        }
+        
+        .dark\:border-gray-700 {
+            border-color: rgb(55 65 81) !important;
+        }
+        
+        /* Bitcoin orange color */
+        .text-btc-orange {
+            color: #ff9900 !important;
+        }
+        
+        /* Navigation link styles */
+        .nav-link {
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: #ff9900 !important;
+        }
+        
+        /* Current page navigation item (BIP 360) should be orange */
+        .text-btc-orange {
+            color: #ff9900 !important;
+        }
+        
+        /* Ensure orange color works in both light and dark modes */
+        html:not(.dark) .text-btc-orange {
+            color: #ff9900 !important;
+        }
+        
+        .dark .text-btc-orange {
+            color: #ff9900 !important;
+        }
+        
+        /* Ensure hover effects work for all nav items except the current page */
+        .nav-link:hover:not(.text-btc-orange) {
+            color: #ff9900 !important;
+        }
+        
+        /* Keep the current page orange even on hover */
+        .text-btc-orange:hover {
+            color: #ff9900 !important;
+        }
+        
+        /* Hover effects for both light and dark modes */
+        html:not(.dark) .nav-link:hover {
+            color: #ff9900 !important;
+        }
+        
+        .dark .nav-link:hover {
+            color: #ff9900 !important;
+        }
+        
+        /* Dark mode toggle button visibility */
+        .dark #toggleDark_light {
+            display: block !important;
+        }
+        
+        .dark #toggleDark_dark {
+            display: none !important;
+        }
+        
+        /* Light mode toggle button visibility (default state) */
+        #toggleDark_light {
+            display: none;
+        }
+        
+        #toggleDark_dark {
+            display: block;
+        }
+        
+        /* Light mode styles */
+        html:not(.dark) .bg-white {
+            background-color: #ffffff !important;
+        }
+        
+        html:not(.dark) .text-gray-900 {
+            color: rgb(17 24 39) !important;
+        }
+        
+        html:not(.dark) .text-gray-700 {
+            color: rgb(55 65 81) !important;
+        }
+        
+        html:not(.dark) .border-gray-200 {
+            border-color: rgb(229 231 235) !important;
+        }
+        
+        /* Ensure proper light mode colors for navigation */
+        
+        .dark .text-gray-900 {
+            color: rgb(243 244 246) !important;
+        }
+        
+        /* Light mode specific overrides */
+        html:not(.dark) .bg-white {
+            background-color: #ffffff !important;
+        }
+        
+        html:not(.dark) .text-gray-900 {
+            color: rgb(17 24 39) !important;
+        }
+        
+        html:not(.dark) .text-gray-700 {
+            color: rgb(55 65 81) !important;
+        }
+        
+        html:not(.dark) .border-gray-200 {
+            border-color: rgb(229 231 235) !important;
+        }
+        
+        /* Specific styles for the main content area in light mode */
+        html:not(.dark) h2 {
+            color: rgb(17 24 39) !important;
+        }
+        
+        html:not(.dark) .text-xl {
+            color: rgb(17 24 39) !important;
+        }
+        
+        html:not(.dark) a:not(.text-btc-orange) {
+            color: rgb(17 24 39) !important;
+        }
+        
+        /* Override the text-slate-700 for main content in light mode */
+        html:not(.dark) .text-slate-700 {
+            color: rgb(55 65 81) !important;
+        }
+        
+        /* Ensure proper contrast for headings and important text */
+        html:not(.dark) .font-semibold {
+            color: rgb(17 24 39) !important;
+        }
+    </style>
+
     <script>
-        // setup and initialize dark mode
-        // https://tailwindcss.com/docs/dark-mode
-        window.setTheme = function () {
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark')
+        // setup plausible function for custom events
+        window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) }
+
+        // Simple dark mode implementation
+        function toggleDarkMode(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('toggleDark_light').style.display = 'block';
+                document.getElementById('toggleDark_dark').style.display = 'none';
             } else {
-                document.documentElement.classList.remove('dark')
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('toggleDark_light').style.display = 'none';
+                document.getElementById('toggleDark_dark').style.display = 'block';
             }
         }
-        window.setTheme();
+
+        // Initialize dark mode based on localStorage or system preference
+        document.addEventListener('DOMContentLoaded', function () {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                toggleDarkMode('dark');
+            } else {
+                toggleDarkMode('light');
+            }
+        });
+        
+        // Also initialize immediately for faster loading
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
 </head>
 
@@ -45,11 +357,24 @@
             <!-- <div class="flex lg:flex-1">&nbsp;</div> -->
             <div class="lg:flex lg:gap-x-12">
                 <a href="index.html" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">INTRO</a>
-                <a href="bip360.html" class="text-sm/6 font-semibold text-btc-orange nav-link" style="text-decoration: none;">BIP 360</a>
+                <a href="bip360.html" class="text-sm/6 font-semibold text-btc-orange nav-link" style="text-decoration: none; color: #ff9900 !important;">BIP 360</a>
                 <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank"
                     class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">HOURGLASS</a>
-                <a href="media.html"
-                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">MEDIA</a>
+                <div class="relative group">
+                    <button type="button" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link flex items-center"
+                        style="text-decoration: none; background: none; border: none; cursor: pointer;">
+                        MEDIA
+                        <svg class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <a href="media.html" class="block px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-btc-orange nav-link"
+                            style="text-decoration: none;">COVERAGE</a>
+                        <a href="assets/press.pdf" target="_blank" class="block px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-btc-orange nav-link"
+                            style="text-decoration: none;">PRESS</a>
+                    </div>
+                </div>
             </div>
             <!-- <div class="hidden lg:flex lg:flex-1 lg:justify-end">&nbsp;</div> -->
         </nav>
@@ -60,15 +385,17 @@
             <div class="flex flex-col space-y-4 pt-4 md:pt-8">
                 <div class="flex justify-between">
                     <div class="flex">
-                        <svg id="toggleDark_light" class="hidden dark:block w-6 h-6 hover:cursor-pointer"
-                            onclick="localStorage.theme = 'light'; window.setTheme()" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <!-- Sun icon (show in dark mode, clicking switches to light) -->
+                        <svg id="toggleDark_light" class="w-6 h-6 hover:cursor-pointer"
+                            onclick="toggleDarkMode('light')" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display: none;">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
                         </svg>
-                        <svg id="toggleDark_dark" class="flex dark:hidden w-6 h-6 hover:cursor-pointer"
-                            onclick="localStorage.theme = 'dark'; window.setTheme()" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <!-- Moon icon (show in light mode, clicking switches to dark) -->
+                        <svg id="toggleDark_dark" class="w-6 h-6 hover:cursor-pointer"
+                            onclick="toggleDarkMode('dark')" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
                         </svg>
@@ -670,3 +997,4 @@ Dallaire-Demers, Mark Erhardt, Joey Yandle, Jon Atack, Armin Sabouri, Jameson Lo
     </div>
 </body>
 </html>
+

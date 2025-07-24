@@ -310,6 +310,29 @@
         html:not(.dark) .font-semibold {
             color: rgb(17 24 39) !important;
         }
+
+        /* Mobile dropdown positioning */
+        @media (max-width: 1023px) {
+            #mediaDropdown {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Navigation layout fixes */
+        @media (min-width: 1024px) {
+            .nav-container {
+                flex-direction: row !important;
+                gap: 3rem !important;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .nav-container {
+                flex-direction: column !important;
+                gap: 1rem !important;
+            }
+        }
     </style>
 
     <script>
@@ -348,27 +371,51 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
+
+        function toggleMediaDropdown() {
+            const dropdown = document.getElementById('mediaDropdown');
+            const icon = document.getElementById('mediaDropdownIcon');
+            const isVisible = !dropdown.classList.contains('invisible');
+            
+            if (isVisible) {
+                dropdown.classList.add('invisible', 'opacity-0');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                dropdown.classList.remove('invisible', 'opacity-0');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Initialize media dropdown functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const mediaDropdownBtn = document.getElementById('mediaDropdownBtn');
+            if (mediaDropdownBtn) {
+                mediaDropdownBtn.addEventListener('click', toggleMediaDropdown);
+            }
+        });
     </script>
 </head>
 
 <body class="bg-white dark:bg-zinc-900">
     <header class="bg-white dark:bg-zinc-800 border-gray-200 dark:border-gray-700 border-b border-b-gray-200 dark:border-b-gray-700">
-        <nav class="flex items-center justify-center p-6 lg:px-8" aria-label="Global">
-            <!-- <div class="flex lg:flex-1">&nbsp;</div> -->
-            <div class="lg:flex lg:gap-x-12">
+        <nav class="flex items-center justify-center p-6 lg:px-8 lg:justify-between" aria-label="Global">
+            <div class="hidden lg:flex lg:flex-1">
+                &nbsp;
+            </div>
+            <div class="nav-container flex items-center">
                 <a href="index.html" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">INTRO</a>
                 <a href="bip360.html" class="text-sm/6 font-semibold text-btc-orange nav-link" style="text-decoration: none; color: #ff9900 !important;">BIP 360</a>
                 <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank"
                     class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">HOURGLASS</a>
                 <div class="relative group">
-                    <button type="button" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link flex items-center"
+                    <button id="mediaDropdownBtn" type="button" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link flex items-center"
                         style="text-decoration: none; background: none; border: none; cursor: pointer;">
                         MEDIA
-                        <svg class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="mediaDropdownIcon" class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
-                    <div class="absolute left-0 mt-2 w-48 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div id="mediaDropdown" class="absolute left-0 mt-2 w-48 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <a href="media.html" class="block px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-btc-orange nav-link"
                             style="text-decoration: none;">COVERAGE</a>
                         <a href="assets/press.pdf" target="_blank" class="block px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-btc-orange nav-link"
@@ -376,7 +423,7 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="hidden lg:flex lg:flex-1 lg:justify-end">&nbsp;</div> -->
+            <div class="hidden lg:flex lg:flex-1 lg:justify-end">&nbsp;</div>
         </nav>
     </header>
 

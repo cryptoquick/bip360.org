@@ -204,7 +204,7 @@
 <p>In other words, P2TSH outputs commit to the Merkle root of a tapscript tree without committing to an internal key. The script(s) being committed to, however, may contain a key or key-hash.</p>
 <p>This output type is designed to offer tapscript users protection against long exposure quantum attacks as well as a practical output type with which post-quantum signatures may be used if such signatures are adopted in the future.</p>
 <p>Since P2TSH outputs have no key path spend, they omit the Taproot internal key. Instead, a P2TSH output includes the 32-byte root of the taptree as defined in <a href="/341" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
-<img src="bip-0360/media/merkletree.png" />
+<img src="/images/merkletree.png" />
 <p>To construct a P2TSH output, we follow the process outlined in <a href="/341" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the tapleaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2TSH outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
 <pre><code>D = tagged_hash(&quot;TapLeaf&quot;, bytes([leaf_version]) + ser_script(script))
 CD = tagged_hash(&quot;TapBranch&quot;, C + D)

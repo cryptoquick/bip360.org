@@ -1,36 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+    <meta name="description" content="Read BIPs like a pro." />
     <meta name="keywords" content="bitcoin, bitcoin improvement proposals, bip, bips, static, share" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="og:title" content="BIP 360: Pay to Quantum Resistant Hash" />
-    <meta property="og:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+    <meta property="og:title" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
+    <meta property="og:description" content="Read BIPs like a pro." />
     <meta property="og:image" content="https://bips.dev/og-bips-dev.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BIP 360: Pay to Quantum Resistant Hash" />
-    <meta name="twitter:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
-    <meta name="twitter:creator" content="@cryptoquick" />
+    <meta name="twitter:title" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
+    <meta name="twitter:description" content="Read BIPs like a pro." />
+    <meta name="twitter:creator" content="@nickmonad" />
     <meta name="twitter:image" content="https://bips.dev/og-bips-dev.png" />
 
-    <title>BIP 360: Pay to Quantum Resistant Hash</title>
+    <title>BIP 360: Pay-to-Tapscript-Hash (P2TSH)</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="/style.css" />
 
+        <link rel="stylesheet" href="/style.css" />
+
+
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <script src="/pagefind/pagefind-ui.js"></script>
+
+    <script defer data-domain="bips.dev" src="/js/script.js"></script>
     <script>
         // setup plausible function for custom events
-        window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) }
+        window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 
         // setup and initialize dark mode
         // https://tailwindcss.com/docs/dark-mode
-        window.setTheme = function () {
+        window.setTheme = function() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark')
             } else {
@@ -38,6 +44,24 @@
             }
         }
         window.setTheme();
+
+        // searching via
+        // https://pagefind.app
+        window.addEventListener('DOMContentLoaded', function(event) {
+            new PagefindUI({
+                element: "#search",
+                hightlightParam: "highlight",
+                showImages: false,
+                showSubResults: true,
+                translations: {
+                    placeholder: "Search BIPs"
+                },
+                processTerm: function(term) {
+                    plausible('Search');
+                    return term;
+                }
+            });
+        });
     </script>
 
     <style>
@@ -63,1023 +87,313 @@
             background-color: #ff9900 !important;
             color: #6b7280 !important;
         }
-
-        .text-btc-orange {
-            color: #ff9900 !important;
-        }
     </style>
 </head>
 
 <body class="bg-white dark:bg-zinc-900">
-    <header class="bg-white dark:bg-zinc-800 border-gray-200 dark:border-gray-700 border-b border-b-gray-200 dark:border-b-gray-700">
-        <nav class="flex items-center justify-center p-6 lg:px-8" aria-label="Global">
-            <!-- <div class="flex lg:flex-1">&nbsp;</div> -->
-            <div class="lg:flex lg:gap-x-12">
-                <a href="index.html" class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">INTRO</a>
-                <a href="bip360.html"
-                    class="text-sm/6 font-semibold text-btc-orange nav-link" style="text-decoration: none;">BIP360</a>
-                <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank"
-                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">HOURGLASS</a>
-                <a href="media.html"
-                    class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-btc-orange nav-link" style="text-decoration: none;">MEDIA</a>
-            </div>
-            <!-- <div class="hidden lg:flex lg:flex-1 lg:justify-end">&nbsp;</div> -->
-        </nav>
-    </header>
     <div class="container mx-auto flex justify-center">
-        <div data-pagefind-body
-            class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-2 space-y-10 text-slate-700 dark:text-gray-300">
+        <div data-pagefind-body class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-10 space-y-10 text-slate-700 dark:text-gray-300">
 
-            <div class="flex flex-col space-y-4 pt-4 md:pt-8">
-                <div class="flex justify-between">
-                    <div class="flex">
-                        <svg id="toggleDark_light" class="hidden dark:block w-6 h-6 hover:cursor-pointer"
-                            onclick="localStorage.theme = 'light'; window.setTheme()" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                        </svg>
-                        <svg id="toggleDark_dark" class="flex dark:hidden w-6 h-6 hover:cursor-pointer"
-                            onclick="localStorage.theme = 'dark'; window.setTheme()" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex flex-col space-y-2">
-                    <h2 data-pagefind-weight="10" class="text-2xl font-semibold">BIP 360: Pay to Quantum Resistant
-                        Hash</h2>
-                    <div class="flex justify-between">
-                        <div class="text-xl font-semibold">2024-12-18</div>
-                        <a href="https:&#x2F;&#x2F;github.com&#x2F;cryptoquick&#x2F;bips&#x2F;blob&#x2F;p2qrh&#x2F;bip-0360.mediawiki"
-                            target="_blank">View on GitHub</a>
-                    </div>
-                </div>
+    <div class="flex flex-col space-y-4 pt-4 md:pt-8">
+        <div class="flex justify-between">
+            <a href="/">Back to BIPs</a>
+            <div class="flex">
+                <svg id="toggleDark_light" class="hidden dark:flex w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'light'; window.setTheme()"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                </svg>
+                <svg id="toggleDark_dark" class="flex dark:hidden w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'dark'; window.setTheme()"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                </svg>
+            </div>
+        </div>
+        <div class="flex flex-col space-y-2">
+            <div data-pagefind-weight="10" class="text-2xl font-extrabold">BIP 360: Pay-to-Tapscript-Hash (P2TSH)</div>
+            <div class="flex justify-between">
+                <div class="text-xl font-semibold">2024-12-18</div>
+                <a href="https:&#x2F;&#x2F;github.com&#x2F;bitcoin&#x2F;bips&#x2F;blob&#x2F;master&#x2F;bip-0360.mediawiki" target="_blank">View on GitHub</a>
+            </div>
+        </div>
 
-                <article
-                    class="max-w-none prose prose-lg prose-zinc prose-p:leading-relaxed prose-a:font-bold prose-a:underline prose-a:decoration-2 prose-a:decoration-bitcoin prose-pre:bg-zinc-200 prose-pre:text-zinc-800 dark:prose-invert dark:prose-pre:bg-zinc-600 dark:prose-pre:text-white">
-                    <pre><code>  BIP: 360
-  Title: Pay to Quantum Resistant Hash
+        <article class="max-w-none prose prose-lg prose-zinc prose-p:leading-relaxed prose-a:font-bold prose-a:underline prose-a:decoration-2 prose-a:decoration-bitcoin prose-pre:bg-zinc-200 prose-pre:text-zinc-800 dark:prose-invert dark:prose-pre:bg-zinc-600 dark:prose-pre:text-white">
+            <pre><code>  BIP: 360
   Layer: Consensus (soft fork)
+  Title: Pay-to-Tapscript-Hash (P2TSH)
   Author: Hunter Beast &lt;hunter@surmount.systems&gt;
+          Ethan Heilman &lt;ethan.r.heilman@gmail.com&gt;
+          Isabel Foxen Duke &lt;isabel.duke@gmail.com&gt;
   Comments-Summary: No comments yet.
   Comments-URI: https:&#x2F;&#x2F;github.com&#x2F;bitcoin&#x2F;bips&#x2F;wiki&#x2F;Comments:BIP-0360
   Status: Draft
   Type: Standards Track
   Created: 2024-12-18
   License: BSD-3-Clause
+  Requires: 340, 341, 342
 </code></pre>
-                    <h2> Introduction </h2>
-                    <h3> Abstract </h3>
-                    <p>This document proposes the introduction of a new output type using signatures based on
-                        Post-Quantum Cryptography (PQC).
-                        This approach for adding a post-quantum secure output type does not require a hard fork or block
-                        size increase.</p>
-                    <h3> Copyright </h3>
-                    <p>This document is licensed under the 3-clause BSD license.</p>
-                    <h3> Motivation </h3>
-                    <p>The primary threat to Bitcoin from Cryptoanalytically-Relevant Quantum Computers (CRQCs)<ref
-                            name="CRQC">
-                            A Cryptoanalytically-Relevant Quantum Computer is an <em>object</em> which is only loosely
-                            defined by <em>characteristics</em> in quantum physics as of today. It could be understood
-                            in the context of this BIP and in bitcoin that it's a <em>hardware-agnostic</em> computer
-                            supposed to have the architecture to keep <em>coherent</em> a sufficient number of logical
-                            qubits to be able to run the Shor algorithm in an efficient fashion.</ref>
-                        is their potential to break the cryptographic assumptions of Elliptic Curve Cryptography (ECC),
-                        which secures Bitcoin's signatures and Taproot
-                        commitments. Specifically, <a href="https://arxiv.org/pdf/quant-ph/0301141"
-                            target="_blank">Shor's algorithm</a> enables a CRQC to solve the
-                        Discrete Logarithm Problem (DLP) exponentially faster than classical methods<ref name="shor">
-                            Shor's algorithm is
-                            believed to need 10^8 operations to break a 256-bit elliptic curve public key.</ref>,
-                        allowing the derivation of
-                        private keys from public keys-- a process referred to here as quantum key decryption.
-                        <ref name="quantum-key-decryption">Meaning, deriving private keys from public keys via Shor's
-                            algorithm</ref>
-                        Importantly, simply doubling the public
-                        key length (e.g., using a hypothetical secp512k1 curve) would only make deriving the private key
-                        twice as hard,
-                        offering insufficient protection. The computational complexity of this attack is further
-                        explored in
-                        <a href="https://pubs.aip.org/avs/aqs/article/4/1/013801/2835275/The-impact-of-hardware-specifications-on-reaching"
-                            target="_blank"><em>The impact of hardware specifications on reaching quantum advantage in
-                                the fault-tolerant regime</em></a>.
-                    </p>
-                    <p>This proposal aims to mitigate these risks by introducing a Pay to Quantum Resistant Hash (P2QRH)
-                        output type that
-                        relies on PQC signature algorithms. By adopting PQC, Bitcoin can enhance its quantum
-                        resistance without requiring a hard fork or block size increase.</p>
-                    <p>The vulnerability of existing Bitcoin addresses<ref name="address-vulnerability">A vulnerable
-                            Bitcoin address is any
-                            <em>scriptPubKey</em> type that exposes an elliptic curve public key as <em>raw bytes</em>
-                            in a <em>block</em>, making it susceptible
-                            to private key derivation through Shor's algorithm. This includes P2PK outputs and any
-                            script that contains an
-                            unprotected public key.
-                        </ref> is detailed in
-                        <a href="https://web.archive.org/web/20240715101040/https://www2.deloitte.com/nl/nl/pages/innovatie/artikelen/quantum-computers-and-the-bitcoin-blockchain.html"
-                            target="_blank">this Deloitte report</a>.
-                        The report estimates that in 2020 approximately 25% of the Bitcoin supply is held within
-                        addresses vulnerable to
-                        quantum attack. As of the time of writing, that number is now closer to 20%. Independently,
-                        Bitcoin developer Pieter
-                        Wuille <a
-                            href="https://web.archive.org/web/20220531184542/https://twitter.com/pwuille/status/1108085284862713856"
-                            target="_blank">reasons</a> even more addresses might be vulnerable, representing
-                        5M to 10M bitcoin.
-                    </p>
-                    <p>Ordinarily, when a transaction is signed, the public key is explicitly stated in the input
-                        script. This means that the
-                        public key is exposed on the blockchain when the transaction is spent, making it vulnerable to
-                        quantum attack until
-                        it's mined. One way to mitigate this is to submit the transaction directly to a mining pool,
-                        bypassing the mempool.
-                        This process is known as an out-of-band transaction or a private mempool. In this case, the
-                        mining pool must be trusted
-                        not to reveal the transaction public key to attackers. The problem with this approach is that it
-                        requires a trusted
-                        third party, which the P2QRH proposal aims to avoid. It also doesn't account for block reorg
-                        attacks, which would
-                        reveal public keys in blocks that were once mined but are now orphaned and must be mined again.
-                        Additionally,
-                        it depends on the mining pool whether they reveal their block template to either the public or
-                        to miners.</p>
-                    <p>Not having public keys exposed on-chain is an important step for quantum security. Otherwise,
-                        funds would need to be
-                        spent to new addresses on a regular basis in order to prevent the possibility of a
-                        "long-exposure CRQC attack" recovering
-                        the key behind high-value addresses. A long-exposure quantum attack can be considered one
-                        performed with chain data, such
-                        as that from a used address or one encoded in a spend script. This is likely to be more common
-                        early on, as early
-                        quantum computers must be run for longer in order to overcome errors caused by noise. A
-                        "short-exposure quantum attack"
-                        would be one performed on keys in the mempool, which is seen as much more difficult given the
-                        block time, and so it
-                        requires more sophisticated CRQCs.<ref name="short-exposure">
-                            In the paper
-                            <a href="https://arxiv.org/pdf/2306.08585" target="_blank">How to compute a 256-bit elliptic
-                                curve private key with only 50 million Toffoli gates</a>
-                            the authors estimate that a CRQC with 28 million superconducting physical qubits would take
-                            8.3 seconds to calculate a
-                            256-bit key, while a CRQC with 6.9 million physical qubits would take 58 seconds. This
-                            implies that a CRQC with 4x as
-                            many qubits would be roughly 7 times faster.
-                        </ref>
-                    </p>
-                    <p>As the value being sent increases, so too should the fee in order to commit the transaction to
-                        the chain as soon as
-                        possible. Once the transaction is mined, it makes useless the public key revealed by spending a
-                        UTXO, so long as it is
-                        never reused.</p>
-                    <p>It is proposed to implement a Pay to Quantum Resistant Hash (P2QRH) output type that relies on a
-                        PQC signature
-                        algorithm. This new output type protects transactions submitted to the mempool and helps
-                        preserve the free market by
-                        preventing the need for private, out-of-band mempool transactions.</p>
-                    <p>The following table is intended to inform the average Bitcoin user whether their bitcoin is
-                        vulnerable to a long-exposure
-                        quantum attack:</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>+ Output types vulnerable to long-exposure attacks on unspent addresses</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Type</td>
-                            </tr>
-                            <tr>
-                                <td>P2PK</td>
-                            </tr>
-                            <tr>
-                                <td>P2PKH</td>
-                            </tr>
-                            <tr>
-                                <td>P2MS</td>
-                            </tr>
-                            <tr>
-                                <td>P2SH</td>
-                            </tr>
-                            <tr>
-                                <td>P2WPKH</td>
-                            </tr>
-                            <tr>
-                                <td>P2WSH</td>
-                            </tr>
-                            <tr>
-                                <td>P2TR</td>
-                            </tr>
-                            <tr>
-                                <td>P2QRH</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>¹ Funds in P2PKH, P2SH, P2WPKH, and P2WSH outputs become vulnerable to long-exposure quantum
-                        attacks when their input script is revealed. An address is no longer safe against long-exposure
-                        quantum attacks after funds from it have been spent.</p>
-                    <p>It should be noted that Taproot outputs are vulnerable in that they encode a 32-byte x-only
-                        public key, from which a
-                        full public key can be reconstructed.</p>
-                    <p>If a CRQC recovers an extended public key (xpub), including its chain code, it can derive all
-                        non-hardened child public
-                        keys by guessing or iterating through child indexes, as allowed by BIP-32's non-hardened
-                        derivation. With Shor's
-                        algorithm, the CRQC could then compute the corresponding non-hardened child private keys
-                        directly from those public keys,
-                        without needing the extended private key (xprv) or an exposed child private key. Hardened child
-                        keys remain secure since
-                        they cannot be derived from the xpub alone. However, if the xprv is exposed, then all child
-                        private keys--both hardened
-                        and non-hardened--become vulnerable. Thus, in a quantum context, the xpub alone is sufficient to
-                        expose all non-hardened
-                        child private keys.</p>
-                    <h4> Long Exposure and Short Exposure Quantum Attacks </h4>
-                    <p>A Long Exposure Quantum Attack is an attack in which the public key has been exposed on the
-                        blockchain for an extended
-                        period of time, giving an attacker ample opportunity to break the cryptography. This affects:
-                    </p>
-                    <ul>
-                        <li>P2PK outputs (Satoshi's coins, CPU miners, starts with 04)</li>
-                        <li>Reused addresses (any type, except P2QRH)</li>
-                        <li>Taproot addresses (starts with bc1p)</li>
-                        <li>Extended public keys, commonly known as "xpubs"</li>
-                        <li>Wallet descriptors</li>
-                    </ul>
-                    <p>A Short Exposure Quantum Attack is an attack that must be executed quickly while a transaction is
-                        still in the mempool,
-                        before it is mined into a block. This affects:</p>
-                    <ul>
-                        <li>Any transaction in the mempool (except for P2QRH)</li>
-                    </ul>
-                    <p>Short-exposure attacks require much larger, more expensive CRQCs since they must be executed
-                        within the short window
-                        before a transaction is mined. Long-exposure attacks can be executed over a longer timeframe
-                        since the public key remains
-                        exposed on the blockchain indefinitely.</p>
-                    <p>Coinbase outputs to P2PK keys go as far as block 200,000, so there are, at the time of writing,
-                        1,723,848 coins that
-                        are vulnerable from the first epoch in P2PK outputs alone. The majority of these have a block
-                        reward of 50 coins each,
-                        and there are roughly 34,000 distinct P2PK scripts that are vulnerable. These coins can be
-                        considered
-                        "Satoshi's Shield." Any addresses with a balance of less than the original block subsidy of 50
-                        coins can be considered
-                        cryptoeconomically incentive incompatible to capture until all of these are mined, and these
-                        addresses serve to provide
-                        time to transition Bitcoin to implement post-quantum security.</p>
-                    <p>It's for the above reason that, for those who wish to be prepared for quantum emergency, it is
-                        recommended that no more
-                        than 50 bitcoin are kept under a single, distinct, unused Native SegWit (P2WPKH, "bc1q") address
-                        at a time. This is
-                        assuming that the attacker is financially motivated instead of, for example, a nation state
-                        looking to break confidence
-                        in Bitcoin. Independently, this assumes that other vulnerable targets such as central banks have
-                        upgraded their
-                        cryptography by this time.</p>
-                    <p>The Commercial National Security Algorithm Suite (CNSA) 2.0 has a timeline for software and
-                        networking equipment to be
-                        upgraded by 2030, with browsers and operating systems fully upgraded by 2033. According to NIST
-                        IR 8547, Elliptic Curve
-                        Cryptography is planned to be disallowed within the US federal government after 2035. An
-                        exception is made for hybrid
-                        cryptography, which is the use of ECC and post-quantum algorithms together.</p>
-                    <p>Although the main threat posed by CRQCs is to the signatures used in Bitcoin, a smaller threat is
-                        to Bitcoin's hash
-                        algorithms. In particular, while a CRQC could use <a
-                            href="https://en.wikipedia.org/wiki/Grover's_algorithm" target="_blank">Grover's
-                            algorithm</a>
-                        to gain a quadratic speedup on brute-force attacks on the hash functions used in Bitcoin, a
-                        significantly more powerful
-                        CRQC is needed for these attacks to meaningfully impact Bitcoin. For instance, a preimage attack
-                        on
-                        HASH160 <ref name="hash160">Used by P2PKH, P2SH, and P2WPKH addresses, though not P2WSH because
-                            it uses 256-bit hashes.</ref>
-                        using Grover's algorithm would require at least 10^24 quantum operations. As for Grover's
-                        application to mining, see
-                        <a href="https://quantumcomputing.stackexchange.com/a/12847" target="_blank">Sam Jaques' post on
-                            this</a>.
-                    </p>
-                    <h3> Rationale </h3>
-                    <p>This is the first in a series of BIPs under a QuBit soft fork. A qubit is a fundamental unit of
-                        quantum computing, and
-                        the capital B refers to Bitcoin. The name QuBit also rhymes to some extent with SegWit.</p>
-                    <p>It is proposed to use SegWit version 3. This results in addresses that start with bc1r, which
-                        could be a useful way to
-                        remember that these are quantum (r)esistant addresses. This is referencing the lookup table
-                        under
-                        <a href="/173" target="_blank">BIP-173</a>.
-                    </p>
-                    <p>P2QRH is meant to be implemented on top of P2TR, combining the security of classical Schnorr
-                        signatures along with
-                        post-quantum cryptography. This is a form of hybrid cryptography such that no regression in
-                        security is presented
-                        should a vulnerability exist in one of the signature algorithms used. One key distinction
-                        between P2QRH and P2TR
-                        however is that P2QRH will encode a hash of the public key. This is a significant deviation from
-                        how Taproot works by
-                        itself, but it is necessary to avoid exposing public keys on-chain where they are vulnerable to
-                        attack.</p>
-                    <p>P2QRH uses a 32-byte HASH256 (specifically SHA-256 twice-over) of the public key to reduce the
-                        size of new outputs and
-                        also to increase security by not having the public key available on-chain. While HASH256 uses
-                        double SHA-256 like
-                        Bitcoin's Proof of Work, this does not meaningfully increase quantum resistance compared to
-                        single SHA-256, as both
-                        provide approximately 2^128 security against Grover's algorithm. The practical impact of quantum
-                        attacks on SHA-256
-                        remains theoretical since quantum circuits for SHA-256 are still theoretical, but using the same
-                        hash function as
-                        Proof of Work maintains consistency with Bitcoin's existing security model. This hash serves as
-                        a minimal cryptographic
-                        commitment to a public key in the style of a
-                        <a href="/141" target="_blank">BIP-141 witness program</a>.
-                        Because it goes into the scriptPubKey, it does not receive a witness or attestation discount.
-                    </p>
-                    <p>Post-quantum public keys are generally larger than those used by ECC, depending on the security
-                        level.
-                        Originally BIP-360 proposed NIST Level V, 256-bit security, but this was changed to NIST Level
-                        I, 128-bit security
-                        due to concerns over the size of the public keys, the time it would take to verify signatures,
-                        and being generally
-                        deemed "overkill".</p>
-                    <p>Support for FALCON signatures will be introduced first, with the intention of adding other
-                        post-quantum
-                        algorithms as they are approved. By way of comparison, FALCON signatures are roughly 20x larger
-                        than Schnorr signatures.
-                        FALCON has recently been approved by NIST. NIST approval streamlines implementations through
-                        establishing
-                        consensus in the scientific and developer community. This means, to maintain present transaction
-                        throughput, an
-                        increase in the witness discount will likely be desired in a QuBit soft fork. That will be
-                        specified in a future QuBit
-                        BIP.</p>
-                    <p>An increase in the witness discount must not be taken lightly. It must be resistant to
-                        applications that might take
-                        advantage of this discount (e.g., storage of arbitrary data as seen with "inscriptions") without
-                        a corresponding
-                        increase in economic activity. An increase in the witness discount would not only impact node
-                        runners but those with
-                        inscriptions would also have the scarcity of their non-monetary assets affected. The only way to
-                        prevent these effects
-                        while also increasing the discount is to have a completely separate witness--a "quantum
-                        witness." Because it is meant
-                        only for public keys and signatures, we call this section of the transaction the attestation.
-                    </p>
-                    <p>Additionally, it should be noted, whether an output with a P2QRH spend script corresponds to a
-                        PQC signature is not
-                        known until the output is spent.</p>
-                    <p>While it might be seen as a maintenance burden for Bitcoin ecosystem devs to go from a single
-                        cryptosystem
-                        implementation to three additional distinct PQC cryptosystems--and it most certainly is--the
-                        ramifications of a chain
-                        broken through extrinsic factors should provide sufficient motivation. An increase in software
-                        maintenance everywhere
-                        signatures are used should be seen as an acceptable compromise for maintained integrity of
-                        Bitcoin transfers during a
-                        regime of quantum advantage.</p>
-                    <p>The inclusion of these three cryptosystems: SPHINCS+, CRYSTALS-Dilithium, and FALCON have various
-                        advocates
-                        within the community due to their varying security assumptions. Hash-based cryptosystems are
-                        more conservative,
-                        time-tested, and well-reviewed. Lattice cryptography is relatively new and introduces novel
-                        security assumptions to
-                        Bitcoin, but their signatures are smaller and might be considered by some to be an adequate
-                        alternative to hash-based
-                        signatures.</p>
-                    <p>The reason multiple cryptosystems are included is in the interest of supporting hybrid
-                        cryptography, especially for
-                        high value outputs, such as cold wallets used by exchanges. To improve the viability of the
-                        activation client and
-                        adoption by wallets and libraries, a library akin to libsecp256k1 will be developed. This
-                        library, libbitcoinpqc,
-                        will support the new PQC cryptosystems and can be used as a reference for other language-native
-                        implementations.</p>
-                    <p>In the distant future, following the implementation of the P2QRH output type in a QuBit soft
-                        fork, there will likely
-                        be a need for Pay to Quantum Secure (P2QS) addresses. A distinction is made between cryptography
-                        that's merely resistant
-                        to quantum attack, and cryptography that's secured by specialized quantum hardware. P2QRH is
-                        resistant to quantum
-                        attack, while P2QS is quantum secure. These will require specialized quantum hardware for
-                        signing, while still
-                        <a href="https://quantum-journal.org/papers/q-2023-01-19-901/" target="_blank">using public keys
-                            that are verifiable via classical means</a>.
-                    </p>
-                    <p>While P2QRH lacks features like signature aggregation for smaller transactions, it offers a
-                        pragmatic first step
-                        toward quantum resistance. Future BIPs can add enhancements like P2QS, signature aggregation,
-                        and possibly full
-                        BIP-32 compatibility once tested and viable. Until quantum cryptography hardware and advanced
-                        schemes are widespread,
-                        P2QRH provides meaningful protection against quantum threats without delaying deployment for a
-                        perfect solution.</p>
-                    <p>Additional follow-on BIPs will be needed to implement P2QS, signature aggregation, and full
-                        BIP-32 compatibility
-                        (if possible) <ref name="bip-32">BIP-32 relies on elliptic curve operations to derive keys from
-                            xpubs to support
-                            watch-only wallets, which PQC schemes may not support.</ref>. However, until specialized
-                        quantum cryptography hardware
-                        is widespread and signature aggregation schemes are thoroughly vetted, P2QRH addresses should be
-                        an adequate
-                        intermediate solution that provides meaningful protection against quantum threats.</p>
-                    <h2> Specification </h2>
-                    <p>We define the signature scheme and transaction structure as follows.</p>
-                    <h3> Descriptor Format </h3>
-                    <p>To integrate P2QRH into existing wallet software and scripts, we introduce a new output
-                        descriptor function
-                        <code>qrh()</code>. This function represents a P2QRH output, similar to how <code>wpkh()</code>
-                        and <code>tr()</code>
-                        are used for P2WPKH and P2TR outputs, respectively.
-                    </p>
-                    <p>The <code>qrh()</code> function takes a threshold value and multiple key specifications grouped
-                        by key type. The format is:</p>
-                    <pre><code>  qrh(threshold, keytype(0x01, [hash1, hash2, ...]), keytype(0x02, [hash1, hash2, ...]), ...)
+<h2>Introduction</h2>
+<h3>Abstract</h3>
+<p>This document proposes a new output type: Pay-to-Tapscript-Hash (P2TSH), via a soft fork. P2TSH outputs operate with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the key path spend removed.</p>
+<p>Through this modification, P2TSH outputs allow developers to use tapscript in a manner that is:</p>
+<ol>
+<li>resistant to long exposure attacks by Cryptographically Relevant Quantum Computers (CRQCs), and</li>
+<li>resistant to future cryptanalytic approaches that may compromise the elliptic curve cryptography (ECC) used by Bitcoin.</li>
+</ol>
+<p>It is worth noting that proposed P2TSH outputs are only resistant to "long exposure attacks" on elliptic curve cryptography; that is, attacks on keys exposed for time periods longer than needed to confirm a spending transaction.</p>
+<p>Protection against more sophisticated quantum attacks, including protection against private key recovery from public keys exposed in the mempool while a transaction is waiting to be confirmed (a.k.a. "short exposure attacks"), may require the introduction of post-quantum signatures in Bitcoin. We believe it's worth considering this path in the future and intend to offer a separate proposal for this purpose upon further research.</p>
+<p>This document additionally defines "long exposure" and "short exposure" attacks, and other new terminology in the Glossary.</p>
+<h3>Copyright</h3>
+<p>This document is licensed under the 3-clause BSD license.</p>
+<h3>Motivation</h3>
+<p>The primary threat to Bitcoin from Cryptographically Relevant Quantum Computers (CRQCs) is their potential to break the key cryptographic assumption which secures the digital signatures used in Bitcoin.<sup id="cite_ref_1"><a href="#cite_ref_1">1</a></sup> More specifically, <a href="https://arxiv.org/pdf/quant-ph/0301141" target="_blank">Shor's algorithm</a> enables a CRQC to solve the Discrete Logarithm Problem (DLP) exponentially faster than classical methods.<sup id="cite_ref_2"><a href="#cite_ref_2">2</a></sup> This allows the derivation of private keys from public keys - a process referred to here as quantum key recovery.<sup id="cite_ref_3"><a href="#cite_ref_3">3</a></sup> While it is unclear when or if CRQCs will become viable in the future, we propose the addition of a quantum-resistant, tapscript-native output type for those interested in this level of protection.</p>
+<p>While some may balk at the potential threat of quantum computers to Bitcoin given their limited functionality to date, some others - including governments, corporations and some existing and potential Bitcoin users - are concerned about their potential for advancement. The Commercial National Security Algorithm Suite (CNSA) 2.0, for instance, has mandated software and networking equipment to be upgraded to post-quantum schemes by 2030, with browsers and operating systems fully upgraded by 2033. Additionally, according to NIST IR 8547, Elliptic Curve Cryptography (ECC) is planned to be disallowed within the US federal government after 2035 (with an exception made for hybrid cryptography, or the use of ECC and post-quantum algorithms together). These kinds of mandates have triggered concern by some ECC users, including some Bitcoin users who prefer to be prepared out of an abundance of caution.</p>
+<p>In the most optimistic case, wherein quantum computers never pose a significant risk to ECC, we understand that the possibility of quantum advancement alone may be influencing adoption and broad confidence in the Bitcoin network. In other words, we believe users' fear of quantum computers may be worth addressing regardless of CRQC viability. Given these concerns, we think it's worth considering simple low risk changes that create options for using Bitcoin in a quantum-resistant way.</p>
+<p>As a conservative first step in this effort, we propose Pay-to-Tapscript-Hash (P2TSH), a tapscript-native output type that can be used in a quantum resistant manner.</p>
+<h3>Long Exposure vs Short Exposure Attacks</h3>
+<p>For clarity, this proposal specifically mitigates against the risk of long exposure attacks on tapscript-native outputs. While other Bitcoin output types already mitigate against this risk, Tapscript outputs (P2TR output types) are vulnerable to long exposure quantum attacks.</p>
+<p>A long exposure attack is an attack performed on exposed blockchain data, such as exposed public keys or the spend scripts of spent outputs. These are likely to be the earliest quantum attacks made possible on Bitcoin, because attackers will have ample time - as much time as vulnerable keys are exposed - to carry out quantum key recovery.</p>
+<p>Short exposure attacks, however, require faster quantum computers, because they must occur within the relatively short time that a transaction is unconfirmed in the mempool.</p>
+<p>Bitcoin outputs are generally vulnerable to short exposure attacks, as most Bitcoin transactions require revealing the associated public key when spending. Full protection of outputs from short exposure attacks may require the use of post-quantum signature schemes.</p>
+<p>Since long exposure attacks on public keys are likely to be the first quantum-enabled threat to Bitcoin, we propose a tapscript-native output type that is resistant to long exposure attacks as a first step in hardening Bitcoin against the potential threat of quantum computers.</p>
+<p>The following list of output types describes their long exposure attack vulnerability:</p>
+<table><thead><tr><th>Type</th><th>Vulnerable</th><th>Prefix</th><th>Example</th></tr></thead><tbody>
+<tr><td>P2PK</td><td>Yes</td><td>Varies</td><td>02103203b768951584fe9af6d9d9e6ff26a5f76e453212f19ba163774182ab8057f3eac</td></tr>
+<tr><td>P2PKH</td><td>No*</td><td>1</td><td>1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</td></tr>
+<tr><td>P2MS</td><td>Yes</td><td>Varies</td><td>52410496ec45f878b62c46c4be8e336dff7cc58df9b502178cc240e...</td></tr>
+<tr><td>P2SH</td><td>No*</td><td>3</td><td>3FkhZo7sGNue153xhgqPBcUaBsYvJW6tTx</td></tr>
+<tr><td>P2WPKH</td><td>No*</td><td>bc1q</td><td>bc1qsnh5ktku9ztqeqfr89yrqjd05eh58nah884mku</td></tr>
+<tr><td>P2WSH</td><td>No*</td><td>bc1q</td><td>bc1qvhu3557twysq2ldn6dut6rmaj3qk04p60h9l79wk4lzgy0ca8mfsnffz65</td></tr>
+<tr><td>P2TR</td><td>Yes</td><td>bc1p</td><td>bc1p92aslsnseq786wxfk3ekra90ds9ku47qttupfjsqmmj4z82xdq4q3rr58u</td></tr>
+<tr><td>P2TSH</td><td>No*</td><td>bc1z</td><td>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve</td></tr>
+</tbody></table>
+<p>The following output types are fundamentally vulnerable to long exposure attacks:</p>
+<ul>
+<li>P2PK outputs (e.g. Satoshi's coins, CPU miners)</li>
+<li>Reused outputs*</li>
+<li>Tapscript outputs (starts with bc1p)</li>
+</ul>
+<p><nowiki>*</nowiki> Funds in P2PKH, P2SH, P2WPKH, P2WSH, and P2TSH outputs can become vulnerable to long exposure quantum attacks anytime their script reveals a public key.</p>
+<p>Note: Extended public keys, commonly known as "xpubs," and wallet descriptors also reveal quantum vulnerable public key information. For further clarification on quantum attack vectors, please refer to the <a href="#Glossary" target="_blank">Glossary of Terms</a>.</p>
+<h2>Design</h2>
+<p>Pay-to-Tapscript-Hash (P2TSH) is a proposed new output type that commits to the root of a tapscript tree. It operates with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the quantum vulnerable key path spend removed.</p>
+<p>In other words, P2TSH outputs commit to the Merkle root of a tapscript tree without committing to an internal key. The script(s) being committed to, however, may contain a key or key-hash.</p>
+<p>This output type is designed to offer tapscript users protection against long exposure quantum attacks as well as a practical output type with which post-quantum signatures may be used if such signatures are adopted in the future.</p>
+<p>Since P2TSH outputs have no key path spend, they omit the Taproot internal key. Instead, a P2TSH output includes the 32-byte root of the taptree as defined in <a href="/341" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
+<img src="bip-0360/media/merkletree.png" />
+<p>To construct a P2TSH output, we follow the process outlined in <a href="/341" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the tapleaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2TSH outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
+<pre><code>D = tagged_hash(&quot;TapLeaf&quot;, bytes([leaf_version]) + ser_script(script))
+CD = tagged_hash(&quot;TapBranch&quot;, C + D)
+CDE = tagged_hash(&quot;TapBranch&quot;, CD + E)
+ABCDE = tagged_hash(&quot;TapBranch&quot;, AB + CDE)
 </code></pre>
-                    <p>Where:</p>
-                    <ul>
-                        <li><code>threshold</code> is an integer specifying the minimum number of signatures required
-                        </li>
-                        <li><code>keytype</code> is the hex value representing the key type (0x01 for secp256k1, 0x02
-                            for FALCON-512, 0x04 for CRYSTALS-Dilithium Level I, 0x08 for SPHINCS+-128s)</li>
-                        <li><code>&lt;a href="hash1," target="_blank"&gt;hash2, ...&lt;/a&gt;</code> is an array of
-                            HASH256 hashes of public keys for the corresponding algorithm type</li>
-                    </ul>
-                    <p>For example:</p>
-                    <pre><code>  qrh(3, keytype(0x01, hash256(secp256k1_pubkey1), hash256(secp256k1_pubkey2), hash256(secp256k1_pubkey3), secp256k1_pubkey4_hash, secp256k1_pubkey5_hash),
-      keytype(0x02, hash256(falcon_pubkey1), hash256(falcon_pubkey2), hash256(falcon_pubkey3), falcon_pubkey4_hash, falcon_pubkey5_hash),
-      keytype(0x04, hash256(dilithium_pubkey1), hash256(dilithium_pubkey2), hash256(dilithium_pubkey3), dilithium_pubkey4_hash, dilithium_pubkey5_hash),
-      keytype(0x08, hash256(sphincs_pubkey1), hash256(sphincs_pubkey2), hash256(sphincs_pubkey3), sphincs_pubkey4_hash, sphincs_pubkey5_hash))
+<p>A P2TSH input witness provides the following:</p>
+<pre><code>initial stack element 0,
+...,
+initial stack element N,
+tapleaf script,
+control block = [control byte, 32*m byte Merkle path] # m is the depth of the script in the Merkle tree
 </code></pre>
-                    <p>This represents a 3-of-5 multisig for each key type, with a total of 20 keys: 5 keys per type (3
-                        full public keys and 2
-                        hashes) across 4 different key types.</p>
-                    <p>Internally, the descriptor computes the HASH256 of the concatenated HASH256 of all the
-                        quantum-resistant public keys,
-                        with the threshold and key type bitmask prepended. For each key in the descriptor:</p>
-                    <ul>
-                        <li>If it is already a hash (indicated in the descriptor), it is used directly</li>
-                        <li>If it is a public key, HASH256 is applied to it first</li>
-                    </ul>
-                    <p>This approach ensures that all items in the vector are HASH256 values, whether they originated
-                        from raw public keys or
-                        were provided as hashes. During spending, this allows for selective disclosure of public keys,
-                        where some keys can
-                        remain hidden (represented only by their hashes) while others are fully revealed with their
-                        corresponding public keys.
-                        This flexibility is particularly valuable in multisig schemes where not all keys need to be
-                        revealed to satisfy the
-                        threshold requirement. At a minimum, there should be two different key types in a P2QRH output:
-                        one key that makes use
-                        of classical cryptography, and one that makes use of a PQC algorithm chosen within the wallet.
-                    </p>
-                    <p>Also, it's important to note that order of keys and hashes in the descriptor matters and is based
-                        on the original
-                        public key values, in addition to the key type. Additionally, qrh() does not compile to script,
-                        but instead, describes
-                        what's needed to compute the scriptPubKey hash commitment and also to reveal the attestation
-                        needed to spend the
-                        output.</p>
-                    <h3> Address Format </h3>
-                    <p>P2QRH uses SegWit version 3 outputs, resulting in addresses that start with <code>bc1r</code>,
-                        following
-                        <a href="/173" target="_blank">BIP-173</a>. Bech32 encoding maps version 3 to the
-                        prefix <code>r</code>.
-                    </p>
-                    <p>Example P2QRH address:</p>
-                    <p><code>bc1r...</code> (32-byte Bech32m-encoded HASH256 of the HASH256 of the public keys)</p>
-                    <h3> ScriptPubKey </h3>
-                    <p>The <code>scriptPubKey</code> for a P2QRH output is:</p>
-                    <pre><code>  OP_PUSHNUM_3 OP_PUSHBYTES_32 &lt;nowiki&gt;&lt;hash&gt;&lt;&#x2F;nowiki&gt;
+<p>The initial stack elements of P2TSH provide the same functionality as they do in P2TR. That is, they place elements on the stack to be evaluated by the script.</p>
+<p>The control block is a <em>1 + 32 * m</em> byte array, where the first byte is the control byte and the next <em>32 * m</em> bytes are the Merkle path to the tapleaf script. The control byte is the same as the control byte in a P2TR control block, including the 7 bits which are used to specify the tapleaf version. The parity bit of the control byte is always 1, since P2TSH does not have a key path spend. Unlike P2TR, we omit the public key from the control block as it is not needed in P2TSH. We maintain support for the optional annex in the witness (see Specification section below for more details).</p>
+<h2>Rationale</h2>
+<p>Design of the P2TSH output type is guided by the following intentions:</p>
+<ol>
+<li>Minimize changes to the network. We should reuse existing Bitcoin code and preserve existing software behavior, workflows, user expectations and compatibility whenever possible.</li>
+</ol>
+<p>P2TSH leverages the battle tested P2TR, tapleaf and tapscript code already in Bitcoin, reducing the implementation burden on wallets, exchanges, and libraries that can reuse code they already have. This approach reduces complexity and minimizes implementation risks.</p>
+<ol start="2">
+<li>Create the safest possible path for the addition of post-quantum signature integrations, in the event that they are used in the future.</li>
+</ol>
+<p>Importantly, we are proposing a tapscript-native output type that is resistant to long exposure attacks. While some existing output types are already resistant to long exposure attacks (e.g. P2WSH), no such output type supports tapscript - a feature that may be required for practical implementation of post-quantum signature opcodes.</p>
+<p>P2WSH, for instance, is not tapscript-native and as such does not support the OP_SUCCESSx opcode update path that will be critical for the integration of post-quantum OP_CHECKSIG opcodes into Bitcoin.<sup id="cite_ref_4"><a href="#cite_ref_4">4</a></sup></p>
+<ol start="3">
+<li>Facilitate gradual integration of quantum resistant features that can be carried out iteratively as quantum computers evolve. This approach encourages responsiveness to the current threat-level, while avoiding heavy-handedness in our reactions to a potential threat.</li>
+</ol>
+<p>We designed P2TSH with an eye towards integrating post-quantum signatures in the future, without proposing more complex changes while CRQCs are still in their infancy.</p>
+<h3>P2TSH Trade-Offs</h3>
+<p>While P2TR outputs (and the use of key path spend) will remain an option for folks wishing to use them, we aim to be clear about the tradeoffs of using P2TSH outputs, which disable the key path spend for the benefit of quantum resistance.</p>
+<p>The witness to a P2TSH spend is always larger than the witness to a P2TR key path spend. This is because a P2TR key path spend requires only a Schnorr signature in the witness. For P2TSH, the witness must include your chosen leaf script, its inputs, and a control block consisting of the control byte and Merkle path (if any).</p>
+<p>That said, the witness to a P2TSH spend will always be smaller than the witness to an equivalent P2TR script path spend, because there is no longer any internal key in P2TSH that must be revealed in the control block. For a more complete comparison of output type transaction sizes, the "Transaction Size and Fees" section may be reviewed later in this proposal.</p>
+<p>Additionally, there is a privacy tradeoff when comparing P2TSH and P2TR, which is that users reveal they are spending to a script tree whenever they are using P2TSH outputs, since P2TSH outputs can only be spent via script path spend. In P2TR when you spend an output as a key path spend, you don't reveal if you have any script path spends. This trade-off only exists when comparing P2TR key path spends to P2TSH script path spends; P2TR and P2TSH provide the same level of privacy when both are script path spends.</p>
+<p><strong>Note:</strong> P2TSH and P2TR both provide greater script privacy than P2SH <a href="/16" target="_blank">BIP 16</a> because unused script paths are not revealed.</p>
+<h2>Specification</h2>
+<p>We define the Pay-to-Tapscript-Hash (P2TSH) output structure as follows:</p>
+<p>A P2TSH output is similar to a P2TR output that uses the root of a taptree (as defined in <a href="/341" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. The root of the Merkle tree is then set as the witness program, prepended with a SegWit version 2 byte, and committed to in the output scriptPubKey.</p>
+<h3>Address Format</h3>
+<p>P2TSH outputs use SegWit version 2, resulting in mainnet addresses that start with <code>bc1z</code>, following <a href="/173" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
+<p>Example P2TSH address:</p>
+<pre><code>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve
 </code></pre>
-                    <p>Where:</p>
-                    <ul>
-                        <li><code>OP_PUSHNUM_3</code> (<code>0x03</code>) indicates SegWit version 3.</li>
-                        <li>
-                            <nowiki>
-                                <hash>
-                            </nowiki> is the 32-byte HASH256 of the commitment, as defined in the Hash Commitment
-                            section below.
-                        </li>
-                    </ul>
-                    <h4> Key Type Bitmask </h4>
-                    <p>The key type bitmask is a 1-byte value that indicates the type of key used in the commitment. It
-                        is encoded as follows:</p>
-                    <ul>
-                        <li>0x01 - Key type 0 - secp256k1</li>
-                        <li>0x02 - Key type 1 - FALCON-512</li>
-                        <li>0x04 - Key type 2 - CRYSTALS-Dilithium Level I</li>
-                        <li>0x08 - Key type 3 - SPHINCS+-128s</li>
-                        <li>0x10 - Unused</li>
-                        <li>0x20 - Unused</li>
-                        <li>0x40 - Unused</li>
-                        <li>0x80 - Reserved for if additional key types are added in the future</li>
-                    </ul>
-                    <p>Example key type bitmask using all supported key types:</p>
-                    <pre><code>  0x01 | 0x02 | 0x04 | 0x08 = 0x0F
+<p>This commits to a 32-byte tapscript tree hash.</p>
+<h3>ScriptPubKey</h3>
+<p>The <code>scriptPubKey</code> for a P2TSH output is:</p>
+<pre><code>OP_2 OP_PUSHBYTES_32 &lt;hash&gt;
 </code></pre>
-                    <h4> Hash Commitment </h4>
-                    <p>If there is only a single public key, the hash is computed as the HASH256 of the public key.</p>
-                    <p>In order to support multiple keys, as in the context of multisig or singlesig hybrid
-                        cryptography, the hash is
-                        computed as a commitment to a vector of public key hashes:</p>
-                    <ol>
-                        <li>Sort the public keys first by key type, then by public key value</li>
-                        <li>For each sorted public key, compute its HASH256</li>
-                        <li>Concatenate all the public key hashes in sorted order</li>
-                        <li>Prepend key type bitmask and threshold to the concatenated hashes</li>
-                        <li>Compute the HASH256 of the result</li>
-                    </ol>
-                    <p>For example with 4 public keys:</p>
-                    <pre><code>  &#x2F;&#x2F; First sort the public keys
-  sorted_pubkeys = sort_by_key_type_and_value([pubkey1, pubkey2, pubkey3, pubkey4])
+<p>Where:</p>
+<ul>
+<li><code>OP_2</code> indicates SegWit version 2.</li>
+<li><code>&lt;hash&gt;</code> is the 32-byte Merkle root of the taptree.</li>
+</ul>
+<h3>Script Validation</h3>
+<p>A P2TSH output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. The witness program is the root of the tapscript tree. For the sake of comparison, we have - as much as possible - copied the language verbatim from the script validation section of <a href="/341" target="_blank">BIP 341</a>.</p>
+<ul>
+<li>Let <em>q</em> be the 32-byte array containing the witness program (the second push in the scriptPubKey) which represents the root of the tapleaf Merkle tree (also known as a taptree).</li>
+<li>Fail if the witness stack does not have two or more elements.</li>
+<li>If there are at least three witness elements, and the first byte of the last element is 0x50, this last element is called <em>annex a</em> and is removed from the witness stack. The annex (or the lack thereof) is always covered by the signature and contributes to transaction weight, but is otherwise ignored during P2TSH validation.</li>
+<li>There must be at least two witness elements left.
+<ul>
+<li>Call the second-to-last stack element <em>s</em>, the script (as defined in <a href="/341" target="_blank">BIP 341</a>)</li>
+<li>The last stack element is called the control block <em>c</em>, and must have length <em>1 + 32 * m</em>, for a value of <em>m</em> that is an integer between 0 and 128, inclusive. Fail if it does not have such a length.</li>
+<li>Let <em>v = c[0] &amp; 0xfe</em> be the <em>leaf version</em> (as defined in <a href="/341" target="_blank">BIP 341</a>). To maintain <em>leaf version</em> encoding compatibility the last bit of c[0] is unused and must be 1.<sup id="cite_ref_5"><a href="#cite_ref_5">5</a></sup></li>
+<li>Let <em>k<sub>0</sub> = hash<sub>TapLeaf</sub>(v || compact_size(size of s) || s)</em>; also call it the <em>tapleaf hash</em>.</li>
+<li>For <em>j</em> in <em>[0,1,...,m-1]</em>:
+<ul>
+<li>Let <em>e<sub>j</sub> = c[33+32j:65+32j]</em>.</li>
+<li>Let <em>k<sub>j+1</sub></em> depend on whether <em>k<sub>j</sub> &lt; e<sub>j</sub></em> (lexicographically):
+*  If <em>k<sub>j</sub> &lt; e<sub>j</sub></em>: <em>k<sub>j+1</sub> = hash<sub>TapBranch</sub>(k<sub>j</sub> || e<sub>j</sub>)</em>.
+*  If <em>k<sub>j</sub> ≥ e<sub>j</sub></em>: <em>k<sub>j+1</sub> = hash<sub>TapBranch</sub>(e<sub>j</sub> || k<sub>j</sub>)</em>.</li>
+</ul>
+</li>
+<li>Let <em>r = k<sub>m</sub></em>.</li>
+<li>If <em>q ≠ r</em>, fail.</li>
+<li>Execute the script, according to the applicable script rules, using the witness stack elements excluding the script <em>s</em>, the control block <em>c</em>, and the annex <em>a</em> if present, as initial stack. This implies that for the future leaf versions (non-<em>0xC0</em>) the execution must succeed.</li>
+</ul>
+</li>
+</ul>
+<p>The steps above follow the script path spend logic from <a href="/341" target="_blank">BIP 341</a> with the following changes:</p>
+<ul>
+<li>The witness program is the taptree Merkle root and not a tweaked public key. This means that we skip directly to the BIP 341 spend path taptree Merkle tree validation.</li>
+<li>We compute the taptree Merkle root <em>r</em> and compare it directly to the witness program <em>q</em>.</li>
+<li>The control block is <em>1 + 32*m</em> bytes, instead of <em>33 + 32*m</em> bytes.</li>
+</ul>
+<h3>Common Signature Message Construction</h3>
+<p>The <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#common-signature-message" target="_blank">common signature message</a> construction for P2TSH outputs is exactly the same procedure as defined in <a href="/341" target="_blank">BIP 341</a> for Taproot transactions.</p>
+<h3> Compatibility with BIP 141 </h3>
+<p>By adhering to the SegWit transaction structure and versioning, P2TSH outputs are compatible with existing transaction processing rules. Nodes that do not recognize SegWit version 2 will treat these outputs as anyone-can-spend but, per <a href="/141" target="_blank">BIP 141</a>, will not relay or mine such transactions.</p>
+<h3>Transaction Size and Fees</h3>
+<p>Equivalent P2TSH and P2TR outputs are always the same size. P2TSH inputs can be slightly larger or smaller than their equivalent P2TR inputs, depending on the use of key path vs script path spend in the case of P2TR. Let's consider the cases.</p>
+<h4>Comparison with P2TR key path spend</h4>
+<p>A P2TSH witness will be larger than a P2TR witness when the P2TR output is spent via the key path spend. A witness to a P2TR key path spend is simply a signature. P2TSH quantum resistance comes from removing the P2TR key path spend. Every P2TSH spend is a P2TR script path spend and so requires a script, its input stack and a control block. Consequently, P2TSH loses this size advantage of P2TR key path spends in order to gain quantum resistance. If the taptree only has a single leaf script, no Merkle path is needed in the control block, giving us a minimal size control block of 1 byte.</p>
+<p>P2TSH witness for depth-0 tree (103 bytes):</p>
+<pre><code>[count] (1 byte), # Number of elements in the witness
+[size] signature (1 + 64 bytes = 65 bytes),
+tapleaf script = [size] [OP_PUSHBYTES_32, 32-byte public key, OP_CHECKSIG] (1 + 1 + 32 + 1 bytes = 35 bytes),
+control block = [size] [control byte] [merkle path (empty)] (1 + 1 + 0 bytes = 2 bytes)
 </code></pre>
-                    <pre><code>  &#x2F;&#x2F; Then compute hashes of sorted keys
-  h1 = HASH256(sorted_pubkeys[0])
-  h2 = HASH256(sorted_pubkeys[1])
-  h3 = HASH256(sorted_pubkeys[2])
-  h4 = HASH256(sorted_pubkeys[3])
+<p>P2TR key path spend witness (66 bytes):</p>
+<pre><code>[count] (1 byte), # Number of elements in the witness
+[size] signature (1 + 64 bytes = 65 bytes)
 </code></pre>
-                    <pre><code>  &#x2F;&#x2F; Concatenate all hashes
-  concatenated = h1 &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; h2 &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; h3 &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; h4
+<p>Thus, the P2TSH witness would be 103 - 66 = 37 bytes larger than a P2TR key path spend witness.</p>
+<p>If the Merkle tree has more than a single leaf, then the Merkle path must be included in the control block, increasing the size by <em>32 * m</em> bytes, where m is the depth of the Merkle tree. This would make such witness 37 + 32 * m bytes larger than a P2TR key path spend witness.<sup id="cite_ref_6"><a href="#cite_ref_6">6</a></sup></p>
+<p>P2TSH witness <em>(103 + 32*m bytes)</em>:</p>
+<pre><code>[count] (1 byte), # Number of elements in the witness
+[size] signature (64 + 1 bytes = 65 bytes),
+tapleaf script = [size] [OP_PUSHBYTES_32, 32-byte public key, OP_CHECKSIG] (34 + 1 bytes = 35 bytes),
+control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m bytes)
 </code></pre>
-                    <pre><code>  commitment = key_type_bitmask &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; threshold &lt;nowiki&gt;||&lt;&#x2F;nowiki&gt; concatenated
-</code></pre>
-                    <pre><code>  hash = HASH256(commitment)
-</code></pre>
-                    <p>With sort_by_key_type_and_value defined as:</p>
-                    <pre><code>  def sort_by_key_type_and_value(pubkeys):
-      return sorted(pubkeys, key=lambda x: (x.key_type, x.public_key))
-</code></pre>
-                    <p>When spending, if a public key hash is provided in the attestation with an empty signature, that
-                        hash will be used
-                        directly in the vector computation rather than hashing the full public key. This allows unused
-                        public keys to be
-                        excluded from the transaction while still proving they were part of the original commitment.</p>
-                    <p>The vector construction creates an efficient cryptographic commitment to multiple public keys
-                        while enabling
-                        selective disclosure.</p>
-                    <p>A threshold is provided to indicate the number of signatures required to spend the output. This
-                        is used in the
-                        cryptographic commitment in the hash computation and revealed in the attestation when spent.</p>
-                    <p>Only a single 32-byte X-only secp256k1 public key can be provided as key type 0. There are a few
-                        reasons for this:</p>
-                    <ol>
-                        <li>It maintains Taproot compatibility by removing ambiguity which key is representative of the
-                            Taptree.</li>
-                        <li>It prevents abuse of public keys to store arbitrary data once quantum computing is
-                            ubiquitous.</li>
-                        <li>When a secp256k1 key is specified in the key type bitmask, how many keys it commits to is
-                            unambiguous.</li>
-                        <li>If multiple keys need to be committed to, they must be aggregated, which saves on
-                            transaction size.</li>
-                    </ol>
-                    <p>This design maintains compatibility for <a href="/114" target="_blank">BIP-114</a>
-                        Taproot Merkelized Alternative Script Tree (MAST) merkle root in the commitment, which makes
-                        P2QRH a
-                        quantum-resistant version of Taproot transactions. The TapScript itself must however be provided
-                        in the witness,
-                        as no script execution is allowed in the attestation.</p>
-                    <p>In a multisig context, aside from secp256k1 keys, the number of keys provided in the attestation
-                        is variable and
-                        must meet the threshold as committed to in the hash computation and revealed in the attestation.
-                    </p>
-                    <p>When the address is generated, all public keys must be known in advance, and they must be sorted,
-                        first by key
-                        type, then by public key value, so as to be deterministic.</p>
-                    <p>The key count does not need to be provided for PQC keys because the key type bitmask and
-                        threshold are sufficient
-                        to validate a multisig transaction.</p>
-                    <p>In a singlesig context, multiple PQC keys can be provided, but the key type bitmask and threshold
-                        must still also
-                        be provided to be consistent with the multisig semantics. The threshold will be set as 0x01, and
-                        the key type
-                        bitmask will indicate how many keys of each type are present.</p>
-                    <h3> Transaction Serialization </h3>
-                    <p>Following BIP-141, a new transaction serialization format is introduced to include an attestation
-                        field after the witness field:</p>
-                    <pre><code>  [nVersion][marker][flag][txins][txouts][witness][attestation][nLockTime]
-</code></pre>
-                    <ul>
-                        <li><code>marker</code>: <code>0x00</code> (same as SegWit)</li>
-                        <li><code>flag</code>:
-                            <ul>
-                                <li><code>0x02</code> (indicates the presence of attestation data only)</li>
-                                <li><code>0x03</code> (indicates the presence of both witness and attestation data)</li>
-                            </ul>
-                        </li>
-                        <li><code>attestation</code>: Contains the quantum-resistant public keys and signatures.</li>
-                    </ul>
-                    <h3> Quantum Transaction ID (qtxid) </h3>
-                    <p>The transaction ID is computed as the HASH256 of the serialized transaction, including the
-                        attestation and witness
-                        (if a witness is present). When decoded, this is called the qtxid, which will differ from the
-                        txid and wtxid if an
-                        attestation is present.</p>
-                    <h3> Attestation Structure </h3>
-                    <p>The attestation field consists of:</p>
-                    <ul>
-                        <li><code>key_type_bitmask</code>: A <a
-                                href="https://learnmeabitcoin.com/technical/general/compact-size/"
-                                target="_blank">compact size</a> value indicating which key types are present.</li>
-                        <li><code>threshold</code>: A compact size value indicating the number of signatures required to
-                            spend the output.</li>
-                        <li><code>num_pubkeys</code>: The number of public keys (compact size).</li>
-                    </ul>
-                    <p>For each public key:</p>
-                    <ul>
-                        <li><code>key_type</code>: The key type (compact size). Only one bit is used to indicate the key
-                            type.</li>
-                        <li><code>pubkey_length</code>: compact size length of the public key (compact size).</li>
-                        <li><code>pubkey</code>: The public key bytes.</li>
-                    </ul>
-                    <p>Then:</p>
-                    <ul>
-                        <li><code>num_signatures</code>: The number of signatures (compact size).</li>
-                    </ul>
-                    <p>For each signature:</p>
-                    <ul>
-                        <li><code>signature_length</code>: compact size length of the signature.</li>
-                        <li><code>signature</code>: The signature bytes.</li>
-                    </ul>
-                    <p>This structure repeats for each input, in order, for flexibility in supporting multisig schemes
-                        and various
-                        quantum-resistant algorithms.</p>
-                    <p>For each input, a separate attestation field is used. To know how many attestation fields are
-                        present, implementations
-                        must count the number of inputs present in the transaction.</p>
-                    <h4> Attestation Parsing Example </h4>
-                    <p>Signing for a single input using both secp256k1 Schnorr and FALCON-512:</p>
-                    <p>Number of public keys:</p>
-                    <pre><code>  [key_type_bitmask]: 0x03
-  [threshold]: 0x01
-  [num_pubkeys]: 0x02
-</code></pre>
-                    <p>Pubkey 1:</p>
-                    <pre><code>  [key_type]: 0x01
-  [pubkey_length]: 0x20 (32 bytes)
-  [pubkey]: public_key_secp256k1
-</code></pre>
-                    <p>Pubkey 2:</p>
-                    <pre><code>  [key_type]: 0x02
-  [pubkey_length]: 0x0701 (1793 bytes)
-  [pubkey]: public_key_falcon_512
-</code></pre>
-                    <p>Number of signatures:</p>
-                    <pre><code>  [num_signatures]: 0x02
-</code></pre>
-                    <p>Signature 1:</p>
-                    <pre><code>  [signature_length]: 0x40 (64 bytes)
-  [signature]: signature_secp256k1
-</code></pre>
-                    <p>Signature 2:</p>
-                    <pre><code>  [signature_length]: 0x0500 (1280 bytes)
-  [signature]: signature_falcon_512
-</code></pre>
-                    <p>Note: This contrasts with multisig inputs, where the attestation structure repeats for each
-                        public key and signature.</p>
-                    <h3> Signature Algorithms </h3>
-                    <p>The specific quantum-resistant signature algorithm used cannot be inferred from the length of the
-                        public key due to
-                        collisions in length between algorithms. Instead, when each key is revealed in the attestation,
-                        the key type bitmask
-                        indicates which algorithm was used.</p>
-                    <p>Supported PQC algorithms and their NIST Level I parameters:</p>
-                    <ul>
-                        <li><strong>secp256k1 - BIP-340 - Schnorr + X-Only</strong>
-                            <ul>
-                                <li>Key Type 0</li>
-                                <li>Public Key Length: 32 bytes</li>
-                                <li>Signature Length: 64 bytes</li>
-                                <li>Total Size: 96 bytes</li>
-                                <li>Cycles to sign: 42,000 (EdDSA)</li>
-                                <li>Cycles to verify: 130,000 (EdDSA)</li>
-                            </ul>
-                        </li>
-                        <li><strong>FN-DSA-512 - FIPS 206 - FALCON-512:</strong>
-                            <ul>
-                                <li>Key Type 1</li>
-                                <li>Public Key Length: 897 bytes</li>
-                                <li>Signature Length: 667 bytes</li>
-                                <li>Total Size: 1,564 bytes</li>
-                                <li>Cycles to sign: 1,009,764</li>
-                                <li>Cycles to verify: 81,036</li>
-                            </ul>
-                        </li>
-                        <li><strong>ML-DSA-44 - FIPS 204 - CRYSTALS-Dilithium Level I:</strong>
-                            <ul>
-                                <li>Key Type 2</li>
-                                <li>Public Key Length: 1,312 bytes</li>
-                                <li>Signature Length: 2,420 bytes</li>
-                                <li>Total Size: 3,732 bytes</li>
-                                <li>Cycles to sign: 333,013</li>
-                                <li>Cycles to verify: 118,412</li>
-                            </ul>
-                        </li>
-                        <li><strong>SLH-DSA-SHAKE-128s - FIPS 205 - SPHINCS+-128s:</strong>
-                            <ul>
-                                <li>Key Type 3</li>
-                                <li>Public Key Length: 32 bytes</li>
-                                <li>Signature Length: 7,856 bytes</li>
-                                <li>Total Size: 7,888 bytes</li>
-                                <li>Cycles to sign: 4,682,570,992</li>
-                                <li>Cycles to verify: 4,764,084</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p>Implementations must recognize the supported algorithms and validate accordingly.</p>
-                    <p>A bitmask is used to indicate the algorithm used for each public key and signature pair. The
-                        bitmask enumerates based on
-                        the key type as indicated above. This is used in the cryptographic commitment in the hash
-                        computation and
-                        revealed in the attestation for each public key when spent.</p>
-                    <h3> Script Validation </h3>
-                    <p>To spend a P2QRH output, the following conditions must be met:</p>
-                    <ol>
-                        <li>The <code>scriptPubKey</code> must be of the form:</li>
-                    </ol>
-                    <p>OP_PUSHNUM_3 &lt;32-byte hash&gt;</p>
-                    <ol start="2">
-                        <li>The attestation must include:</li>
-                    </ol>
-                    <ul>
-                        <li>The quantum-resistant public key(s) whose HASH256 concatenated and hashed again matches the
-                            <nowiki>
-                                <hash>
-                            </nowiki> in</li>
-                    </ul>
-                    <p>the <code>scriptPubKey</code>.</p>
-                    <ul>
-                        <li>
-                            <p>Valid signatures corresponding to the public key(s) and the transaction data.</p>
-                        </li>
-                        <li>
-                            <p>The key type bitmask and threshold must match the commitment in the
-                                <code>scriptPubKey</code>.</p>
-                        </li>
-                    </ul>
-                    <ol start="3">
-                        <li>For multi-signature schemes, all required public keys and signatures must be provided for
-                            that input within the
-                            attestation. Public keys that are not needed or available can be selectively disclosed by
-                            including their hash in the
-                            attestation accompanied with an empty signature by providing a 0x00 signature length byte.
-                            This works so long as
-                            enough keys to meet the threshold are provided.</li>
-                    </ol>
-                    <h4> Sighash Calculation </h4>
-                    <p>The sighash for P2QRH outputs follows the same procedure as defined in <a href="/341"
-                            target="_blank">BIP-341</a> for Taproot transactions:</p>
-                    <ul>
-                        <li><strong>Signature Message:</strong> A single-SHA256 of a tagged hash with the tag
-                            "TapSighash", containing transaction data.</li>
-                        <li><strong>Tagged Hash:</strong> Computed as H(tag || tag || data) where H is SHA256 and tag is
-                            the SHA256 of the tag name.</li>
-                        <li><strong>Key Data:</strong> In addition to transaction data, the sighash includes the spent
-                            output's scriptPubKey.</li>
-                        <li><strong>Extension Fields:</strong> Specific data is included or excluded from the sighash
-                            based on the sighash flag.</li>
-                    </ul>
-                    <p>This signature hash construction ensures transaction malleability is prevented while providing
-                        flexibility through
-                        different sighash types (DEFAULT, ALL, NONE, SINGLE, and ANYONECANPAY variants). The exact
-                        computation follows the
-                        procedure specified in BIP-341 to maintain compatibility with Taproot signatures.</p>
-                    <p>If a sighash flag other than DEFAULT is needed, it can be placed in the transaction witness. In
-                        this case, it will be
-                        the only field in the witness.</p>
-                    <h4> Signature Verification </h4>
-                    <p>Signature verification is as follows:</p>
-                    <ol>
-                        <li>
-                            <p>Extract the <nowiki>
-                                    <hash>
-                                </nowiki> from the <code>scriptPubKey</code>.</p>
-                        </li>
-                        <li>
-                            <p>For each input:</p>
-                        </li>
-                    </ol>
-                    <ul>
-                        <li>
-                            <p>Compute <code>hashed_pubkeys</code> as specified in the Hash Computation section.</p>
-                        </li>
-                        <li>
-                            <p>Compare the resulting hash to <nowiki>
-                                    <hash>
-                                </nowiki>. If they do not match, the script fails.</p>
-                        </li>
-                    </ul>
-                    <ol start="3">
-                        <li>
-                            <p>Verify each signature against the corresponding public key and the sighash.</p>
-                        </li>
-                        <li>
-                            <p>Ensure that the signature algorithm used matches the expected lengths for NIST Level I
-                                security, and is supported by
-                                the implementation.</p>
-                        </li>
-                    </ol>
-                    <h3> Compatibility with BIP-141 </h3>
-                    <p>By adhering to the SegWit transaction structure and versioning, P2QRH outputs are compatible with
-                        existing transaction
-                        processing rules. Nodes that do not recognize SegWit version 3 will treat these outputs as
-                        anyone-can-spend but, per
-                        <a href="/141" target="_blank">BIP-141</a>, will not relay or mine such transactions.
-                    </p>
-                    <h3> Usage Considerations </h3>
-                    <h4> Transaction Size and Fees </h4>
-                    <p>Quantum-resistant signatures are significantly larger than traditional signatures, increasing
-                        transaction size and the
-                        fees required. Users and wallet developers should be aware of this and plan accordingly.</p>
-                    <p>For example, for CRYSTALS-Dilithium Level I, a single public key is 1,312 bytes, and a signature
-                        is 2,420 bytes, resulting in a substantial increase over current
-                        ECDSA or Schnorr signatures.</p>
-                    <h4> Performance Impact </h4>
-                    <p>Verification of quantum-resistant signatures will be computationally more intensive, and any
-                        attestation discount will
-                        also increase storage requirements. Node operators should consider the potential impact on
-                        resource usage in the long
-                        term. Developers may need to optimize signature verification implementations, especially by
-                        implementing caching for
-                        key generation.</p>
-                    <h4> Algorithm Selection </h4>
-                    <p>Introducing three quantum-resistant algorithms to the Bitcoin ecosystem provides users with the
-                        option to select an
-                        appropriate algorithm for their use case, generally based on the amount of value they wish to
-                        secure. Developers can
-                        choose to implement support for multiple algorithms in wallets and on nodes to offer
-                        quantum-resistant options.</p>
-                    <h4> Backward Compatibility </h4>
-                    <p>Older wallets and nodes that have not been made compatible with SegWit version 3 and P2QRH will
-                        not recognize these
-                        outputs. Users should ensure they are using updated wallets and nodes to use P2QRH addresses and
-                        validate transactions
-                        using P2QRH outputs.</p>
-                    <h2> Security </h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>+ Candidate quantum-resistant signature algorithms ordered by largest to smallest
-                                    NIST Level V signature size</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Signature Algorithm</td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://en.wikipedia.org/wiki/Lamport_signature" target="_blank">Lamport
-                                        signature</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2011/191.pdf" target="_blank">Winternitz
-                                        signature</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://sphincs.org/data/sphincs+-r3.1-specification.pdf"
-                                        target="_blank">SPHINCS+ Rd. 3.1 (FIPS 205 - SLH-DSA)</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2011/484.pdf" target="_blank">XMSS</a>
-                                    <ref name="xmss">XMSS, which is based on Winternitz, uses a value of 108
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://pq-crystals.org/dilithium/" target="_blank">CRYSTALS-Dilithium
-                                        (FIPS 204 - ML-DSA)</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2014/457.pdf" target="_blank">pqNTRUsign</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://falcon-sign.info" target="_blank">FALCON (FIPS 206 - FN-DSA)</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2022/1155.pdf" target="_blank">HAWK</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://sqisign.org" target="_blank">SQIsign</a></td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2024/760.pdf" target="_blank">SQIsign2D-West</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="https://eprint.iacr.org/2023/436.pdf" target="_blank">SQIsignHD</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>As shown, supersingular elliptic curve quaternion isogeny signature algorithms represent the
-                        state of the art in
-                        post-quantum cryptography, beyond lattice cryptography alone, especially when key and signature
-                        length are major
-                        constraints. This makes inclusion of SQIsign attractive, however its performance is roughly
-                        100,000 times slower than ECC,
-                        which is prohibitive in blockchain contexts. Meanwhile, SPHINCS+ and CRYSTALS-Dilithium
-                        signatures are already approved
-                        and have achieved broader community consensus. FALCON signatures are also NIST approved.</p>
-                    <p>In comparison, the size of currently used signature algorithms are:</p>
-                    <ul>
-                        <li>ECDSA: 70-72 bytes</li>
-                        <li>Schnorr: 64 bytes</li>
-                    </ul>
-                    <p>In comparison to inception date, secp256k1 <a href="https://www.secg.org/SEC1-Ver-1.0.pdf"
-                            target="_blank">was originally specified in 2000</a>.</p>
-                    <p>One consideration for choosing an algorithm is its maturity. secp256k1 was already 8 years old by
-                        the time it was
-                        chosen as Bitcoin's curve. Isogeny cryptography when it was first introduced was broken over a
-                        weekend.</p>
-                    <p>Signature verification speed as it compares to Schnorr or ECDSA isn't seen as high a
-                        consideration as signature size
-                        due to block space being the primary fee constraint. As a P2QRH implementation materializes, a
-                        benchmark will be added
-                        for performance comparison.</p>
-                    <p>An additional consideration is security level. Longer signature sizes provide more security. NIST
-                        has standardized five
-                        security levels for post-quantum cryptography. NIST security level I provides security
-                        equivalent to 128-bit keys, and
-                        security level V provides 256-bit security.</p>
-                    <h2> Test Vectors and Reference Code </h2>
-                    <p>TBD</p>
-                    <h2> Related Work </h2>
-                    <p>It is worth noting by way of comparison that
-                        [https://ethresear.ch/t/how-to-hard-fork-to-save-most-users-funds-in-a-quantum-emergency/18901
-                        Vitalik Buterin's
-                        proposed solution] in an Ethereum quantum emergency is quite different from the approach in this
-                        BIP. His plan involves
-                        a hard fork of the chain, reverting all blocks after a sufficient amount of theft, and using
-                        STARKs based on BIP-32
-                        seeds to act as the authoritative secret when signing. These measures are deemed far too
-                        heavy-handed for Bitcoin.</p>
-                    <h2> References </h2>
-                    <ul>
-                        <li><a href="https://groups.google.com/g/bitcoindev/c/Aee8xKuIC2s/m/cu6xej1mBQAJ"
-                                target="_blank">Mailing list discussion</a></li>
-                        <li><a href="https://delvingbitcoin.org/t/proposing-a-p2qrh-bip-towards-a-quantum-resistant-soft-fork/956?u=cryptoquick"
-                                target="_blank">Delving Bitcoin discussion</a></li>
-                        <li><a href="https://bitcoinops.org/en/newsletters/2024/06/14/" target="_blank">Bitcoin Optech
-                                newsletter</a></li>
-                        <li><a href="https://bitcoinops.org/en/podcast/2024/06/18/"
-                                target="_blank">draft-bip-for-quantum-safe-address-format Bitcoin Optech discussion
-                                transcript</a></li>
-                    </ul>
-                    <h2> Footnotes </h2>
-                    <references />
-                    <h2> Changelog </h2>
-                    <p>To help implementors understand updates to this BIP, we keep a list of substantial changes.</p>
-                    <ul>
-                        <li>2025-03-18 - Correct inconsistencies in commitment and attestation structure. Switch from
-                            merkle tree commitment to sorted vector hash commitment. Update descriptor format.</li>
-                        <li>2025-03-12 - Add verification times for each algorithm. 256 -&gt; 128 (NIST V -&gt; NIST I).
-                            Add key type bitmask. Clarify multisig semantics.</li>
-                        <li>2025-02-23 - More points of clarification from review. Update dead link.</li>
-                        <li>2025-01-20 - Remove SQIsign from consideration due to significant performance concerns.
-                            Refactor language from long-range attack to long-exposure so as to not be confused with the
-                            language around block re-org attacks.</li>
-                        <li>2024-12-18 - Assigned BIP number.</li>
-                        <li>2024-12-13 - Update to use merkle tree for attestation commitment. Update LR &amp; SR
-                            quantum attack scenarios.</li>
-                        <li>2024-12-01 - Add details on attestation structure and parsing.</li>
-                        <li>2024-10-21 - Replace XMSS with CRYSTALS-Dilithium due to NIST approval and size constraints.
-                        </li>
-                        <li>2024-09-30 - Refactor the ECC vs PoW section. Swap quitness for attestation.</li>
-                        <li>2024-09-29 - Update section on PoW to include partial-preimage.</li>
-                        <li>2024-09-28 - Add Winternitz, XMSS signatures, and security assumption types to PQC table.
-                            Omit NIST Level I table. Add spend script specification. Add revealed public key scenario
-                            table.</li>
-                        <li>2024-09-27 - Initial draft proposal</li>
-                    </ul>
-                    <h2> Acknowledgements </h2>
-                    <p>This document is inspired by <a href="/341" target="_blank">BIP-341</a>, which introduced
-                        the design of the P2TR (Taproot) output type using Schnorr signatures.</p>
-                    <p>Much gratitude to my co-founder, Kyle Crews for proofreading and editing, to David Croisant, who
-                        suggested the name
-                        "QuBit", and Guy Swann for pointing out the earlier name for the attestation, "quitness", was
-                        imperfect. Thank you as
-                        well to those who took the time to review and contribute, including Jeff Bride, Adam Borcany,
-                        Antoine Riard, Pierre-Luc
-                        Dallaire-Demers, Ethan Heilman, Jon Atack, Jameson Lopp, Murchandamus, and Vojtěch Strnad.</p>
+<h4>Comparison with P2TR script path spend</h4>
+<p>A P2TSH witness will be smaller than the witness to an equivalent P2TR script path spend. This is because P2TSH does not require inclusion of any internal public key in the control block to unlock and spend an output. For this reason, a P2TSH witness will always be 32 bytes smaller than an equivalent P2TR script path spend witness.</p>
+<h2>Performance Impact</h2>
+<p>P2TSH is slightly more computationally performant than P2TR script path spends, as the operations to spend a P2TSH output is a strict subset of the operations needed to perform a script path spend on a P2TR output.</p>
+<h2>Backward Compatibility</h2>
+<p>Older wallets and nodes that have not been made compatible with SegWit version 2 and P2TSH will not recognize these outputs. Users should ensure they are using updated wallets and nodes to use P2TSH outputs and validate transactions using P2TSH outputs. P2TSH is fully compatible with tapscript and existing tapscript programs can be used in P2TSH outputs without modification.</p>
+<h2>Security</h2>
+<p>P2TSH outputs provide the same tapscript functionality as P2TR outputs, but with the quantum-vulnerable key path spend removed. The similarity between these output types enables users to easily migrate coins from P2TR outputs to P2TSH outputs for protection against long exposure quantum attacks.</p>
+<p>Protection from long exposure quantum attacks does not depend on the activation of post-quantum signatures in Bitcoin, but requires that users do not expose their public keys to attackers via public key reuse or other unsafe practices.</p>
+<p>P2TSH uses a 256-bit hash output, providing 128 bits of collision resistance and 256 bits of preimage resistance. This is the same level of security as P2WSH specified in <a href="/141" target="_blank">BIP 141</a>, which also uses a 256-bit hash output.</p>
+<p>P2TSH does not, by itself, protect against short exposure quantum attacks, but these attacks can be mitigated by future activation of post-quantum signatures.</p>
+<p>Combined with P2TSH, post-quantum signature schemes can provide comprehensive quantum resistance to P2TSH outputs, including protection from short exposure attacks.</p>
+<p>That said, protection against long exposure quantum attacks alone should not be underestimated. It's unlikely that early CRQCs will be fast enough to perform short exposure attacks, making preparedness against long exposure attacks more time-critical.</p>
+<h2>Security Considerations for Post-Quantum Signature Schemes</h2>
+<p>While this proposal does not include the introduction of post-quantum signature schemes, we think it's worth commenting on security considerations related to this possibility.</p>
+<p>Quantum-resistant signature algorithms (e.g. ML-DSA or SLH-DSA) offer different levels of protection and should be scrutinized before use. We are currently researching options for the potential proposal of post-quantum signatures into Bitcoin and encourage others to engage in this research as well.</p>
+<p>We also imagine the possibility of introducing multiple post-quantum signatures for redundancy. Balancing the risks of additional complexity with the benefits of signature-type redundancy will be the challenge here.</p>
+<h2>Test Vectors and Reference Code</h2>
+<p>Test vector data for creation of P2TSH UTXOs can be found <a href="https://github.com/bitcoin/bips/blob/master/bip-0360/ref-impl/common/tests/data/p2tsh_construction.json" target="_blank">here</a>.</p>
+<p>These test vectors build off of the test vectors for <a href="/341" target="_blank">BIP 341</a> (Taproot). One important distinction is that the P2TSH test vectors do not include keypath spend scenarios.</p>
+<p>Also included are test vectors in <a href="https://github.com/bitcoin/bips/tree/master/bip-0360/ref-impl/rust" target="_blank">rust implementation</a> and <a href="https://github.com/bitcoin/bips/tree/master/bip-0360/ref-impl/python" target="_blank">python implementation</a>. One of these tests demonstrates a tapleaf tapscript that requires a secp256k1 signature to spend the P2TSH UTXO (modeled after one of the extremely valuable examples provided by <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#example-3-script-path-spend-signature" target="_blank">this Taproot script path spend example</a>. Similar to BIP 341 test vectors, all signatures are created with an all-zero (0x0000...0000) <a href="/340" target="_blank">BIP 340</a> auxiliary randomness array.</p>
+<h2>Related Work</h2>
+<p>Below we attempt to summarize some of the ideas discussed on the Bitcoin Development Mailing List that relate to P2TSH.</p>
+<p>The idea of Taproot with key path spend removed has been discussed a number of times in the Bitcoin community.</p>
+<p>For instance, <a href="https://gnusha.org/pi/bitcoindev/CAD5xwhgzR8e5r1e4H-5EH2mSsE1V39dd06+TgYniFnXFSBqLxw@mail.gmail.com/" target="_blank">OP_CAT Makes Bitcoin Quantum Secure</a> notes that if we disable the key path spend in Taproot and activate OP_CAT <a href="/347" target="_blank">BIP 347</a>, we could achieve quantum resistance by using Lamport signatures with OP_CAT.</p>
+<p>Lamport and WOTS (Winternitz One-Time Signatures) built from CAT are quantum resistant, but are one-time signatures - meaning, if you sign twice for the same public key, you risk leaking your private key, which is a significant security concern for everyday users.</p>
+<p>This would require major changes to wallet behavior and would represent a significant security downgrade. Common practices, such as RBF and CPFP, could risk revealing private keys if no stateless signature scheme is used.</p>
+<p><a href="https://groups.google.com/g/bitcoindev/c/8O857bRSVV8/m/rTrpeFjWDAAJ" target="_blank">Trivial QC signatures with clean upgrade path</a> and <a href="https://groups.google.com/g/bitcoindev/c/oQKezDOc4us/m/T1vSMkZNAAAJ" target="_blank">Re: P2QRH / BIP 360 Update</a> also discuss the possibility of Taproot with key path spend removed. The design of P2TSH was partly inspired by these discussions.</p>
+<p>Commit-reveal schemes such as <a href="https://gnusha.org/pi/bitcoindev/1518710367.3550.111.camel@mmci.uni-saarland.de/" target="_blank">Re: Transition to post-quantum (2018)</a> and <a href="https://groups.google.com/g/bitcoindev/c/LpWOcXMcvk8/m/YEiH-kTHAwAJ" target="_blank">Post-Quantum commit / reveal Fawkescoin variant as a soft fork (2025)</a> have been proposed as a way to create cryptocurrencies without public key cryptography. The ideas in this paper were more recently expanded upon by Tadge Dryja in his "<a href="https://www.youtube.com/watch?v=4bzOwYPf1yo" target="_blank">Lifeboat</a>" proposal, which effectively quantum-proofs Bitcoin transactions through a similar pre-commitment scheme designed for Bitcoin.</p>
+<h2>Other Methods of Addressing Quantum Vulnerabilities for Cryptocurrencies</h2>
+<p>It is worth noting, by way of comparison, that <a href="https://ethresear.ch/t/how-to-hard-fork-to-save-most-users-funds-in-a-quantum-emergency/18901" target="_blank">Vitalik Buterin's proposed solution</a> to Ethereum's quantum vulnerability is quite different from the approach in this BIP.</p>
+<p>His plan involves a hard fork of the chain, reverting all blocks after some sufficient amount of theft, and using STARKs based on BIP 32 seeds to act as the authoritative secret when signing. We believe rollbacks of any kind are an untenable approach for Bitcoin and would likely be impractical to implement.</p>
+<p>That said, we believe the use of STARKs (which are quantum-resistant) may prove useful as a method of proving access to external private keys, in the event that the community chooses to burn vulnerable coins as proposed by Jameson Lopp and others in <a href="https://qbip.org/" target="_blank">QBIP</a>.</p>
+<p>Discussions related to the burning of coins, and other attempts to slow a potential supply shock caused by quantum-retrieval of vulnerable coins, are out of scope for this proposal. That said, members of our team have separately proposed <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank">Hourglass</a> to address this concern and are continuing research on this subject.</p>
+<h2>Conclusion</h2>
+<p>In this proposal, we adopt a "prepared not scared" approach to the possible advancement of quantum computing and offer Bitcoin users an option for increased protection if they so choose. This BIP does not take a position on any specific quantum computing timeline, but rather proposes a flexible and unobtrusive option for users that wish to mitigate this risk according to their own estimate of the timeline.</p>
+<p>This is an issue that has been discussed with some regularity in <a href="https://bitcointalk.org/index.php?topic=133425.0" target="_blank">Bitcoin forums</a> since at least 2012, and there is clearly user demand for increased quantum protection.</p>
+<h2>Glossary</h2>
+<p><strong>Quantum Key Recovery</strong></p>
+<p>The derivation of private keys from public keys in elliptic curve cryptography (ECC), made possible by solving the discrete logarithm problem (DLP).</p>
+<p>Shor's algorithm, developed by Peter Shor in 1994, is a quantum algorithm that efficiently solves the discrete logarithm problem - potentially made possible by the future viability of cryptographically relevant quantum computers (CRQCs).</p>
+<p><strong>Long Exposure Attacks</strong></p>
+<p>Attempts to derive private keys from public keys that are exposed for an extended period of time; that is, longer than the window of time that a public key is generally exposed in the mempool while waiting to be confirmed.</p>
+<p>Long exposure attacks give attackers an unlimited amount of time to perform quantum key recovery, as long as funds remain in the output. Poor wallet hygiene (e.g. from address reuse) or use of outputs with exposed public keys (e.g. P2TR outputs) increases vulnerability to long exposure attacks.</p>
+<p><strong>Short Exposure Attacks</strong></p>
+<p>Attempts to derive private keys from public keys during the brief period when funds are unconfirmed in the mempool. These attacks cannot be prevented through wallet hygiene, as revealing a public key is necessary for spending.</p>
+<p>Protection against short exposure attacks may require post-quantum signature schemes; that said, executing these attacks requires faster CRQCs than those capable of executing long exposure attacks and are therefore viewed as lower-risk than long exposure attacks in the nearer term.</p>
+<p><strong>Tapscript-Native Output Type</strong></p>
+<p>Tapscript-native output types are the category of output types that support tapscript (including Schnorr signatures) and taptrees.</p>
+<p><strong>Pay-to-Tapscript-Hash (P2TSH)</strong></p>
+<p>A tapscript-native output type, similar to to Pay-to-Taproot (P2TR), but with the quantum-vulnerable key path spend removed.</p>
+<h2>Footnotes</h2>
+<ol>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_1">^</a> A Cryptographically Relevant Quantum Computer is an <em>object</em> which is only loosely defined by <em>characteristics</em> in quantum physics as of today. It could be understood in the context of this BIP and in Bitcoin that it's a <em>hardware-agnostic</em> computer supposed to have the architecture to keep <em>coherent</em> a sufficient number of logical qubits to be able to run Shor's algorithm in an efficient fashion.</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_2">^</a> Shor's algorithm is believed to need 10^8 operations to break a 256-bit elliptic curve public key.</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_3">^</a> Meaning, deriving private keys from public keys via Shor's algorithm</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_4">^</a> <code>OP_SUCCESSx</code> is a mechanism to upgrade tapscript</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_5">^</a> Why set the last bit of c[0] to one? Consider a faulty implementation that deserializes the <em>leaf version</em> as c[0] rather than c[0] &amp; 0xfe for both P2TR and P2TSH. If they test against P2TSH outputs and require that last bit is 1, this deserialization bug will cause an immediate error.</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_6">^</a> If <em>m &gt;= 8</em>, then the compact size will use 3 bytes rather than 1 byte</li>
+</ol>
+<h2>Changelog</h2>
+<p>To help implementers understand updates to this BIP, we keep a list of substantial changes.</p>
+<ul>
+<li>2025-09-17 - Rewrote BIP for clarity and renamed from P2QRH to P2TSH</li>
+<li>2025-07-20 - Changed the Witness Version from 3 to 2.</li>
+<li>2025-07-07 - P2QRH is now a P2TR with the vulnerable key path spend removed. Number of PQ signature algorithms supported reduced from three to two. PQ signature algorithm support is now added via opcodes or tapleaf version.</li>
+<li>2025-03-18 - Correct inconsistencies in commitment and attestation structure. Switch from Merkle tree commitment to sorted vector hash commitment. Update descriptor format.</li>
+<li>2025-03-12 - Add verification times for each algorithm. 256 to 128 (NIST V to NIST I). Add key type bitmask. Clarify multisig semantics.</li>
+<li>2025-02-23 - More points of clarification from review. Update dead link.</li>
+<li>2025-01-20 - Remove SQIsign from consideration due to significant performance concerns. Refactor language from long range attack to long exposure so as to not be confused with the language around block re-org attacks.</li>
+<li>2024-12-18 - Assigned BIP number.</li>
+<li>2024-12-13 - Update to use Merkle tree for attestation commitment. Update LR &amp; SR quantum attack scenarios.</li>
+<li>2024-12-01 - Add details on attestation structure and parsing.</li>
+<li>2024-10-21 - Replace XMSS with CRYSTALS-Dilithium due to NIST approval and size constraints.</li>
+<li>2024-09-30 - Refactor the ECC vs PoW section. Swap quitness for attestation.</li>
+<li>2024-09-29 - Update section on PoW to include partial-preimage.</li>
+<li>2024-09-28 - Add Winternitz, XMSS signatures, and security assumption types to PQC table. Omit NIST Level I table. Add spend script specification. Add revealed public key scenario table.</li>
+<li>2024-09-27 - Initial draft proposal</li>
+</ul>
+<h2>Acknowledgements</h2>
+<p>This document is inspired by <a href="/341" target="_blank">BIP 341</a>, which introduced the design of the P2TR (Taproot) output type using Schnorr signatures.</p>
+<p>I'm incredibly grateful to Ethan Heilman for joining as co-author and transforming this BIP into something far more congruent with existing Bitcoin design. Additionally, much gratitude to our most recent co-author, Isabel Foxen Duke, for her thoughtful editing and crafting much of the language in this proposal. I am likewise indebted to those on the Anduro Quantum Working Group who took the time to contribute including Jeff Bride, Michael Casey, and notmike.</p>
+<p>Thank you as well to those who took the time to review and contribute, including Jon Atack, Adam Borcany, Ava Chow, Kyle Crews, Pierre-Luc Dallaire-Demers, D++, Mark Erhardt, Jameson Lopp, Antoine Riard, Armin Sabouri, Vojtěch Strnad, Guy Swann, and Joey Yandle.</p>
+<p>Whatever inaccuracies may remain are attributable solely to the authors.</p>
 
-                </article>
-            </div>
+        </article>
+    </div>
 
 
             <hr class="border-slate-700" />
 
             <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
                 <div class="flex items-center space-x-2">
-                    <p class="font-bold">Updated:</p>
-                    <p class="font-bold">May 2025</p>
+                    <p class="font-bold">Updated</p>
+                    <p class="font-bold">2025-12-19</p>
                 </div>
-
-                <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). This website
-                    makes no claim of ownership.</p>
+                <p>See an issue with rendering or formatting? Submit an issue on <a href="https://github.com/nickmonad/bips.dev" target="_blank">GitHub</a></p>
+                <p>Do you find this site useful? Please consider <a href="https://buy.tryspeed.com/plink_live_lyek4a2yW2Sn2wfA" target="_blank">donating</a> some sats to support ongoing development.</p>
+                <p><a href="/">bips.dev</a> is presented by <a href="https://nickmonad.blog" target="_blank">nickmonad</a></p>
+                <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). This website makes no claim of ownership.</p>
             </div>
         </div>
     </div>
-
+<script src="/livereload.js?port=1024&amp;mindelay=10"></script></body>
 </html>

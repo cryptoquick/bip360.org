@@ -3,19 +3,19 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+    <meta name="description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
     <meta name="keywords" content="bitcoin, bitcoin improvement proposals, bip, bips, static, share" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <meta property="og:title" content="BIP 360: Pay to Quantum Resistant Hash" />
-    <meta property="og:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+    <meta property="og:description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
     <meta property="og:image" content="https://bips.dev/og-bips-dev.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="BIP 360: Pay to Quantum Resistant Hash" />
-    <meta name="twitter:description" content="BIP 360 - Pay to Quantum Resistant Hash" />
+    <meta name="twitter:description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
     <meta name="twitter:creator" content="@cryptoquick" />
     <meta name="twitter:image" content="https://bips.dev/og-bips-dev.png" />
 
@@ -72,7 +72,7 @@
             const dropdown = document.getElementById('mediaDropdown');
             const icon = document.getElementById('mediaDropdownIcon');
             const isVisible = !dropdown.classList.contains('invisible');
-            
+
             if (isVisible) {
                 dropdown.classList.add('invisible', 'opacity-0');
                 icon.style.transform = 'rotate(0deg)';
@@ -239,22 +239,21 @@
                         </div>
                         <h1
                             class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-gray-100 sm:text-5xl">
-                            BIP360</h1>
+                            BIP 360</h1>
                         <h3 class="mt-2 text-2xl font-semibold tracking-tight text-pretty text-btc-orange sm:text-3xl">
-                            to add quantum-resistant addresses to Bitcoin
+                            to make Bitcoin more quantum resistant
                         </h3>
 
                         <div class="mt-4">
                             <p>
-                                BIP360 is a proposal to introduce post-quantum cryptography into Bitcoin—was authored by
-                                Hunter Beast to address Bitcoin's most pressing quantum-vulnerability: quantum
+                                BIP 360 is a proposal to make Bitcoin more quantum resistant by fixing a problem with Taproot addresses.
+                                authored by
+                                Hunter Beast, Ethan Heilman, and Isabel Foxen Duke to address Bitcoin's most pressing quantum-vulnerability: quantum
                                 vulnerable addresses.
                             </p>
 
                             <p class="mt-4">
-                                BIP360 introduces "pay-to-quantum-resistant-hash" address types—introduces 3 new
-                                signature algorithms with quantum resistant properties to protect Bitcoin at varying
-                                levels.
+                                BIP 360 introduces a "pay-to-tapscript-hash" address output type that disables the Taproot key path spend, so elliptic curve cryptography is no longer used in a new address output type
                             </p>
                         </div>
 
@@ -262,14 +261,14 @@
                             <div id="readMoreContent" class="hidden mb-3">
                                 <figure class="mt-4 border-l border-btc-orange pl-9">
                                     <blockquote class="font-semibold text-gray-900 dark:text-gray-100">
-                                        <p>At present, Bitcoin addresses—especially, but not limited to, Taproot &
+                                        <p>At present, Bitcoin addresses, especially, but not limited to, Taproot &
                                             Satoshi's
-                                            coins—are not quantum resistant, and are vulnerable to attack in the event
+                                            coins, are not quantum resistant, and are vulnerable to attack in the event
                                             of
                                             sufficient advancement in quantum computing. </p>
                                         <p class="mt-4">
                                             The development of Google's "Willow" quantum chip, as well as Microsoft's
-                                            Majorana 1 chip, has shed light on this vulnerability in recent news—and has
+                                            Majorana 1 chip, has shed light on this vulnerability in recent news, and has
                                             called into question our time left until "Q Day."
                                         </p>
                                     </blockquote>
@@ -285,7 +284,7 @@
                                 class="bg-white rounded-lg shadow-lg border border-gray-200 p-8 pb-9 mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 items-center">
                                 <h2 class="max-w-xl text-3xl font-semibold tracking-tight text-balance text-gray-900 sm:text-4xl lg:col-span-8"
                                     style="margin-top: 0px; margin-bottom: 0px;">
-                                    Want to stay informed about BIP360 and quantum computing? Sign up for updates.
+                                    Want to stay informed about BIP 360 and quantum computing? Sign up for updates.
                                 </h2>
                                 <div class="w-full max-w-md lg:col-span-4 lg:pt-2">
                                     <div class="flex justify-center gap-x-4">
@@ -343,7 +342,7 @@
                         </div>
                         <figcaption class="text-base lg:col-start-1 lg:row-start-3">
                             <div class="font-semibold text-gray-900 dark:text-gray-100">Hunter Beast</div>
-                            <div class="mt-1 text-gray-500 dark:text-gray-400">Author of BIP360</div>
+                            <div class="mt-1 text-gray-500 dark:text-gray-400">Co-Author of BIP 360</div>
                         </figcaption>
                     </figure>
                 </div>
@@ -356,7 +355,7 @@
                         class="relative isolate overflow-hidden bg-orange-400 px-6 py-8 shadow-2xl sm:rounded-3xl sm:px-8 xl:py-8 text-center">
                         <p class="mx-auto mt-6 max-w-2xl text-center text-2xl text-white">For updates on the state of
                             quantum computing, potential impacts on Bitcoin, and proposals for impact mitigation
-                            (including BIP360), <b>subscribe below</b>.</p>
+                            (including BIP 360), <b>subscribe below</b>.</p>
                         <div class="mx-auto mt-10 mb-10 max-w-md gap-x-4">
                             <!-- <iframe src="https://cryptoquick.substack.com/embed" width="100%" height="320"
                                 style="background:blue !important;" scrolling="no"></iframe> -->
@@ -386,11 +385,10 @@
             <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
                 <div class="flex items-center space-x-2">
                     <p class="font-bold">Updated:</p>
-                    <p class="font-bold">May 2025</p>
+                    <p class="font-bold">December 2025</p>
                 </div>
 
-                <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). This website
-                    makes no claim of ownership.</p>
+                <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s).</p>
             </div>
         </div>
     </div>

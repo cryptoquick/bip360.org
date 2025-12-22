@@ -21,21 +21,8 @@
 
     <title>BIP 360: Pay-to-Tapscript-Hash (P2TSH)</title>
 
+    <link rel="stylesheet" href="/style.css" />
 
-        <link rel="stylesheet" href="/style.css" />
-        <link rel="stylesheet" href="/style.css" />
-
-
-    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-    <script src="/pagefind/pagefind-ui.js"></script>
-
-    <script defer data-domain="bips.dev" src="/js/script.js"></script>
-
-
-    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-    <script src="/pagefind/pagefind-ui.js"></script>
-
-    <script defer data-domain="bips.dev" src="/js/script.js"></script>
     <script>
         window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 
@@ -50,24 +37,6 @@
     </script>
 
     <style>
-        /* variables to override on pagefind */
-        /* https://pagefind.app/docs/ui-usage/#customising-the-styles */
-        /* values are from tailwind: https://tailwindcss.com/docs/customizing-colors */
-        :root {
-            --pagefind-ui-primary: #334155;
-            --pagefind-ui-text: #334155;
-            --pagefind-ui-background: #ffffff;
-            --pagefind-ui-border-width: 1px;
-            --pagefind-ui-border-radius: 4px;
-        }
-
-        html.dark {
-            --pagefind-ui-primary: #d1d5db;
-            --pagefind-ui-text: #d1d5db;
-            --pagefind-ui-background: #18181b;
-            --pagefind-ui-border: #152028;
-        }
-
         mark {
             background-color: #ff9900 !important;
             color: #6b7280 !important;
@@ -77,26 +46,24 @@
 
 <body class="bg-white dark:bg-zinc-900">
     <div class="container mx-auto flex justify-center">
-        <div data-pagefind-body class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-10 space-y-10 text-slate-700 dark:text-gray-300">
+        <div class="min-w-full max-w-full lg:min-w-[1000px] lg:max-w-[1000px] px-6 py-10 space-y-10 text-slate-700 dark:text-gray-300">
 
     <div class="flex flex-col space-y-4 pt-4 md:pt-8">
     <div class="flex justify-end">
-        <div class="flex">
-            <svg id="toggleDark_light" class="hidden dark:flex w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'light'; window.setTheme()"
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-            </svg>
-            <svg id="toggleDark_dark" class="flex dark:hidden w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'dark'; window.setTheme()"
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-            </svg>
+        <div class="flex items-center space-x-2">
+        <svg id="toggleDark_light" class="hidden dark:flex w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'light'; window.setTheme()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+        </svg>
+        <svg id="toggleDark_dark" class="flex dark:hidden w-6 h-6 hover:cursor-pointer" onclick="localStorage.theme = 'dark'; window.setTheme()" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+        </svg>
         </div>
     </div>
     <div class="flex flex-col space-y-2">
-        <div data-pagefind-weight="10" class="text-2xl font-extrabold">BIP 360: Pay-to-Tapscript-Hash (P2TSH)</div>
-        <div class="flex justify-between">
-            <div class="text-xl font-semibold">2024-12-18</div>
-            <a href="https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki" target="_blank">View on GitHub</a>
+        <div class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">BIP 360: Pay-to-Tapscript-Hash (P2TSH)</div>
+        <div class="flex flex-col sm:flex-row sm:justify-between gap-4 text-xl text-gray-700 dark:text-gray-300">
+            <div class="font-semibold">2024-12-18</div>
+            <a href="https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">View on GitHub</a>
         </div>
     </div>
 </div>
@@ -364,7 +331,7 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
 
         </article>
     </div>
-            <div data-pagefind-ignore class="w-full flex flex-col items-center space-y-2 text-center">
+            <div class="w-full flex flex-col items-center space-y-2 text-center">
                 <div class="flex items-center space-x-2">
                     <p class="font-bold">Updated</p>
                     <p class="font-bold">2025-12-19</p>

@@ -123,16 +123,16 @@
 <h3>Copyright</h3>
 <p>This document is licensed under the 3-clause BSD license.</p>
 <h3>Motivation</h3>
-<p>The primary threat to Bitcoin from Cryptographically Relevant Quantum Computers (CRQCs) is their potential to break the key cryptographic assumption which secures the digital signatures used in Bitcoin.<sup id="cite_ref_1"><a href="#cite_ref_1">1</a></sup> More specifically, <a href="https://arxiv.org/pdf/quant-ph/0301141" target="_blank">Shor's algorithm</a> enables a CRQC to solve the Discrete Logarithm Problem (DLP) exponentially faster than classical methods.<sup id="cite_ref_2"><a href="#cite_ref_2">2</a></sup> This allows the derivation of private keys from public keys - a process referred to here as quantum key recovery.<sup id="cite_ref_3"><a href="#cite_ref_3">3</a></sup> While it is unclear when or if CRQCs will become viable in the future, we propose the addition of a quantum-resistant, tapscript-native output type for those interested in this level of protection.</p>
+<p>The primary threat to Bitcoin from Cryptographically Relevant Quantum Computers (CRQCs) is their potential to break the key cryptographic assumption which secures the digital signatures used in Bitcoin.<sup id="cite_ref_1"><a href="#cite_ref_1">1</a></sup> More specifically, <a href="https://arxiv.org/pdf/quant-ph/0301141" target="_blank">Shor's algorithm</a> enables a CRQC to solve the Discrete Logarithm Problem (DLP) exponentially faster than classical methods.<sup id="cite_ref_2"><a href="#cite_ref_2">2</a></sup> This allows the derivation of private keys from public keys - a process referred to here as quantum key recovery.<sup id="cite_ref_3"><a href="#cite_ref_3">3</a></sup> While it is unclear when or if CRQCs will become viable in the future, we propose the addition of a quantum-resistant, <a href="#script-tree-output-type">script tree output type</a> for those interested in this level of protection</p>
 <p>While some may balk at the potential threat of quantum computers to Bitcoin given their limited functionality to date, some others - including governments, corporations and some existing and potential Bitcoin users - are concerned about their potential for advancement. The Commercial National Security Algorithm Suite (CNSA) 2.0, for instance, has mandated software and networking equipment to be upgraded to post-quantum schemes by 2030, with browsers and operating systems fully upgraded by 2033. Additionally, according to NIST IR 8547, Elliptic Curve Cryptography (ECC) is planned to be disallowed within the US federal government after 2035 (with an exception made for hybrid cryptography, or the use of ECC and post-quantum algorithms together). These kinds of mandates have triggered concern by some ECC users, including some Bitcoin users who prefer to be prepared out of an abundance of caution.</p>
 <p>In the most optimistic case, wherein quantum computers never pose a significant risk to ECC, we understand that the possibility of quantum advancement alone may be influencing adoption and broad confidence in the Bitcoin network. In other words, we believe users' fear of quantum computers may be worth addressing regardless of CRQC viability. Given these concerns, we think it's worth considering simple low risk changes that create options for using Bitcoin in a quantum-resistant way.</p>
-<p>As a conservative first step in this effort, we propose Pay-to-Tapscript-Hash (P2TSH), a tapscript-native output type that can be used in a quantum resistant manner.</p>
+<p>As a conservative first step in this effort, we propose Pay-to-Merkle-Root (P2MR), a script tree output that can be used in a quantum resistant manner.</p>
 <h3>Long Exposure vs Short Exposure Attacks</h3>
-<p>For clarity, this proposal specifically mitigates against the risk of long exposure attacks on tapscript-native outputs. While other Bitcoin output types already mitigate against this risk, Tapscript outputs (P2TR output types) are vulnerable to long exposure quantum attacks.</p>
+<p>For clarity, this proposal specifically mitigates the risk of long exposure attacks on outputs that support tapscript and script trees. While some other Bitcoin output types, such as P2SH, are safe against long exposure attacks, taproot is not and taproot is the only currently activated output type that supports tapscript and script trees.</p>
 <p>A long exposure attack is an attack performed on exposed blockchain data, such as exposed public keys or the spend scripts of spent outputs. These are likely to be the earliest quantum attacks made possible on Bitcoin, because attackers will have ample time - as much time as vulnerable keys are exposed - to carry out quantum key recovery.</p>
 <p>Short exposure attacks, however, require faster quantum computers, because they must occur within the relatively short time that a transaction is unconfirmed in the mempool.</p>
 <p>Bitcoin outputs are generally vulnerable to short exposure attacks, as most Bitcoin transactions require revealing the associated public key when spending. Full protection of outputs from short exposure attacks may require the use of post-quantum signature schemes.</p>
-<p>Since long exposure attacks on public keys are likely to be the first quantum-enabled threat to Bitcoin, we propose a tapscript-native output type that is resistant to long exposure attacks as a first step in hardening Bitcoin against the potential threat of quantum computers.</p>
+<p>Since long exposure attacks on public keys are likely to be the first quantum-enabled threat to Bitcoin, we propose a script tree output that is resistant to long exposure attacks as a first step in hardening Bitcoin against the potential threat of quantum computers.</p>
 <p>The following list of output types describes their long exposure attack vulnerability:</p>
 <table><thead><tr><th>Type</th><th>Vulnerable</th><th>Prefix</th><th>Example</th></tr></thead><tbody>
 <tr><td>P2PK</td><td>Yes</td><td>Varies</td><td>02103203b768951584fe9af6d9d9e6ff26a5f76e453212f19ba163774182ab8057f3eac</td></tr>
@@ -142,7 +142,7 @@
 <tr><td>P2WPKH</td><td>No*</td><td>bc1q</td><td>bc1qsnh5ktku9ztqeqfr89yrqjd05eh58nah884mku</td></tr>
 <tr><td>P2WSH</td><td>No*</td><td>bc1q</td><td>bc1qvhu3557twysq2ldn6dut6rmaj3qk04p60h9l79wk4lzgy0ca8mfsnffz65</td></tr>
 <tr><td>P2TR</td><td>Yes</td><td>bc1p</td><td>bc1p92aslsnseq786wxfk3ekra90ds9ku47qttupfjsqmmj4z82xdq4q3rr58u</td></tr>
-<tr><td>P2TSH</td><td>No*</td><td>bc1z</td><td>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve</td></tr>
+<tr><td>P2MR</td><td>No*</td><td>bc1z</td><td>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve</td></tr>
 </tbody></table>
 <p>The following output types are fundamentally vulnerable to long exposure attacks:</p>
 <ul>
@@ -150,7 +150,7 @@
 <li>Reused outputs*</li>
 <li>Tapscript outputs (starts with bc1p)</li>
 </ul>
-<p><nowiki>*</nowiki> Funds in P2PKH, P2SH, P2WPKH, P2WSH, and P2TSH outputs can become vulnerable to long exposure quantum attacks anytime their script reveals a public key.</p>
+<p><nowiki>*</nowiki> Funds in P2PKH, P2SH, P2WPKH, P2WSH, and P2MR outputs can become vulnerable to long exposure quantum attacks anytime their script reveals a public key.</p>
 <p>Note: Extended public keys, commonly known as "xpubs," and wallet descriptors also reveal quantum vulnerable public key information. For further clarification on quantum attack vectors, please refer to the <a href="#Glossary" target="_blank">Glossary of Terms</a>.</p>
 <h2>Design</h2>
 <p>Pay-to-Tapscript-Hash (P2TSH) is a proposed new output type that commits to the root of a tapscript tree. It operates with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the quantum vulnerable key path spend removed.</p>

@@ -247,14 +247,14 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li>The control block is <em>1 + 32*m</em> bytes, instead of <em>33 + 32*m</em> bytes.</li>
 </ul>
 <h3>Common Signature Message Construction</h3>
-<p>The <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#common-signature-message" target="_blank">common signature message</a> construction for P2TSH outputs is exactly the same procedure as defined in <a href="/341" target="_blank">BIP 341</a> for Taproot transactions.</p>
+<p>The <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#common-signature-message" target="_blank">common signature message</a> construction for P2MR outputs is exactly the same procedure as defined in <a href="/342" target="_blank">BIP 342 Common Signature Message</a>.</p>
 <h3> Compatibility with BIP 141 </h3>
-<p>By adhering to the SegWit transaction structure and versioning, P2TSH outputs are compatible with existing transaction processing rules. Nodes that do not recognize SegWit version 2 will treat these outputs as anyone-can-spend but, per <a href="/141" target="_blank">BIP 141</a>, will not relay or mine such transactions.</p>
+<p>By adhering to the SegWit transaction structure and versioning, P2MR outputs are compatible with existing transaction processing rules. Nodes that do not recognize SegWit version 2 will treat these outputs as anyone-can-spend but generally will not relay or mine such transactions.</p>
 <h3>Transaction Size and Fees</h3>
-<p>Equivalent P2TSH and P2TR outputs are always the same size. P2TSH inputs can be slightly larger or smaller than their equivalent P2TR inputs, depending on the use of key path vs script path spend in the case of P2TR. Let's consider the cases.</p>
+<p>All P2MR and P2TR outputs are always the same size. P2MR inputs can be slightly larger or smaller than their equivalent P2TR inputs, depending on the use of key path vs script path spend in the case of P2TR. Let's consider the cases.</p>
 <h4>Comparison with P2TR key path spend</h4>
-<p>A P2TSH witness will be larger than a P2TR witness when the P2TR output is spent via the key path spend. A witness to a P2TR key path spend is simply a signature. P2TSH quantum resistance comes from removing the P2TR key path spend. Every P2TSH spend is a P2TR script path spend and so requires a script, its input stack and a control block. Consequently, P2TSH loses this size advantage of P2TR key path spends in order to gain quantum resistance. If the taptree only has a single leaf script, no Merkle path is needed in the control block, giving us a minimal size control block of 1 byte.</p>
-<p>P2TSH witness for depth-0 tree (103 bytes):</p>
+<p>A P2MR witness will be larger than a P2TR witness when the P2TR output is spent via the key path spend. A witness to a P2TR key path spend is simply a signature. P2MR quantum resistance comes from removing the P2TR key path spend. Every P2MR spend is a P2TR script path spend and so requires a script, its input stack and a control block. Consequently, P2MR loses this size advantage of P2TR key path spends in order to gain quantum resistance. If the script tree only has a single leaf script, no Merkle path is needed in the control block, giving us a minimal size control block of 1 byte.</p>
+<p>P2MR witness for depth-0 tree (103 bytes):</p>
 <pre><code>[count] (1 byte), # Number of elements in the witness
 [size] signature (1 + 64 bytes = 65 bytes),
 tapleaf script = [size] [OP_PUSHBYTES_32, 32-byte public key, OP_CHECKSIG] (1 + 1 + 32 + 1 bytes = 35 bytes),
@@ -264,20 +264,20 @@ control block = [size] [control byte] [merkle path (empty)] (1 + 1 + 0 bytes = 2
 <pre><code>[count] (1 byte), # Number of elements in the witness
 [size] signature (1 + 64 bytes = 65 bytes)
 </code></pre>
-<p>Thus, the P2TSH witness would be 103 - 66 = 37 bytes larger than a P2TR key path spend witness.</p>
-<p>If the Merkle tree has more than a single leaf, then the Merkle path must be included in the control block, increasing the size by <em>32 * m</em> bytes, where m is the depth of the Merkle tree. This would make such witness 37 + 32 * m bytes larger than a P2TR key path spend witness.<sup id="cite_ref_6"><a href="#cite_ref_6">6</a></sup></p>
-<p>P2TSH witness <em>(103 + 32*m bytes)</em>:</p>
+<p>Thus, the P2MR witness would be 103 - 66 = 37 bytes larger than a P2TR key path spend witness.</p>
+<p>If the Merkle tree has more than a single leaf, then the Merkle path must be included in the control block, increasing the size by 32 * m bytes, where m is the depth of the Merkle tree. While script trees do support leaf scripts of different depths, here we assume the Merkle tree has been constructed such that each leaf is at the same depth. This would make such witness 37 + 32 * m bytes larger than a P2TR key path spend witness.<sup id="cite_ref_6"><a href="#cite_ref_6">6</a></sup></p>
+<p>P2MR witness <em>(103 + 32*m bytes)</em>:</p>
 <pre><code>[count] (1 byte), # Number of elements in the witness
 [size] signature (64 + 1 bytes = 65 bytes),
 tapleaf script = [size] [OP_PUSHBYTES_32, 32-byte public key, OP_CHECKSIG] (34 + 1 bytes = 35 bytes),
 control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m bytes)
 </code></pre>
 <h4>Comparison with P2TR script path spend</h4>
-<p>A P2TSH witness will be smaller than the witness to an equivalent P2TR script path spend. This is because P2TSH does not require inclusion of any internal public key in the control block to unlock and spend an output. For this reason, a P2TSH witness will always be 32 bytes smaller than an equivalent P2TR script path spend witness.</p>
+<p>A P2MR witness will be smaller than the witness to an equivalent P2TR script path spend. This is because P2MR does not require inclusion of an internal public key in the control block to unlock and spend an output. For this reason, a P2MR witness will always be 32 bytes smaller than an equivalent P2TR script path spend witness.</p>
 <h2>Performance Impact</h2>
-<p>P2TSH is slightly more computationally performant than P2TR script path spends, as the operations to spend a P2TSH output is a strict subset of the operations needed to perform a script path spend on a P2TR output.</p>
+<p>P2MR is slightly more computationally performant than P2TR script path spends, as the operations to spend a P2MR output is a strict subset of the operations needed to perform a script path spend on a P2TR output.</p>
 <h2>Backward Compatibility</h2>
-<p>Older wallets and nodes that have not been made compatible with SegWit version 2 and P2TSH will not recognize these outputs. Users should ensure they are using updated wallets and nodes to use P2TSH outputs and validate transactions using P2TSH outputs. P2TSH is fully compatible with tapscript and existing tapscript programs can be used in P2TSH outputs without modification.</p>
+<p>Older wallets and nodes that have not been made compatible with SegWit version 2 and P2MR will not understand these outputs. Per <a href="https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki">BIP 350</a> older wallets should be able to spend funds to SegWit version 2 outputs. Users should ensure they are using updated wallets and nodes to receive P2MR outputs and validate transactions using P2MR outputs. P2MR is fully compatible with tapscript and existing tapscript programs can be used in P2MR outputs without modification. P2MR can also support future scripts with new leaf versions.</p>
 <h2>Security</h2>
 <p>P2TSH outputs provide the same tapscript functionality as P2TR outputs, but with the quantum-vulnerable key path spend removed. The similarity between these output types enables users to easily migrate coins from P2TR outputs to P2TSH outputs for protection against long exposure quantum attacks.</p>
 <p>Protection from long exposure quantum attacks does not depend on the activation of post-quantum signatures in Bitcoin, but requires that users do not expose their public keys to attackers via public key reuse or other unsafe practices.</p>

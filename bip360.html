@@ -194,12 +194,12 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <p>The witness to a P2MR spend is always larger than the witness to a P2TR key path spend. This is because a P2TR key path spend requires only a Schnorr signature in the witness. For P2MR, the witness must include the chosen leaf script, the initial stack, and a control block consisting of the control byte and Merkle path (if any).</p>
 <p>That said, the witness to a P2MR spend will always be smaller than the witness to an equivalent P2TR script path spend, because there is no longer any internal key in P2MR that must be revealed in the control block. For a more complete comparison of output type transaction sizes, the "Transaction Size and Fees" section may be reviewed later in this proposal.</p>
 <p>Additionally, there is a privacy tradeoff when comparing P2MR and P2TR, which is that users reveal they are spending to a script tree whenever they are using P2MR outputs, since P2MR outputs can only be spent via script path spend. In P2TR when you spend an output as a key path spend, you don't reveal if you have any script path spends. This trade-off only exists when comparing P2TR key path spends to P2MR script path spends; P2TR and P2MR provide the same level of privacy when both are script path spends.</p>
-<p><strong>Note:</strong> P2MR and P2TR both provide greater script privacy than P2SH <a href="/16" target="_blank">BIP 16</a> because unused script paths are not revealed.</p>
+<p><strong>Note:</strong> P2MR and P2TR both provide greater script privacy than P2SH <a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki" target="_blank">BIP 16</a> because unused script paths are not revealed.</p>
 <h2>Specification</h2>
 <p>We define the Pay-to-Merkle-Root (P2MR) output structure as follows:</p>
 <p>A P2MR output is similar to a P2TR output (as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. A P2MR output is then a SegWit version 2 byte followed by the Merkle root of the script tree as the witness program.</p>
 <h3>Address Format</h3>
-<p>P2MR outputs use SegWit version 2, resulting in mainnet addresses that start with bc1z, following <a href="/173" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
+<p>P2MR outputs use SegWit version 2, resulting in mainnet addresses that start with bc1z, following <a href="https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
 <p>Example P2MR address:</p>
 <pre><code>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve
 </code></pre>
@@ -214,7 +214,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li><code>&lt;hash&gt;</code> is the 32-byte Merkle root of the script tree.</li>
 </ul>
 <h3>Script Validation</h3>
-<p>A P2MR output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. For the sake of comparison, we have — as much as possible — copied the language verbatim from the script validation section of <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>.</p>
+<p>A P2MR output is a native SegWit output (see <a href="https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. For the sake of comparison, we have — as much as possible — copied the language verbatim from the script validation section of <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>.</p>
 <ul>
 <li>Let <em>q</em> be the 32-byte array containing the witness program (the second push in the scriptPubKey) which represents the Merkle root of the script tree.</li>
 <li>Fail if the witness stack does not have two or more elements.</li>
@@ -247,7 +247,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li>The control block is <em>1 + 32*m</em> bytes, instead of <em>33 + 32*m</em> bytes.</li>
 </ul>
 <h3>Common Signature Message Construction</h3>
-<p>The <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#common-signature-message" target="_blank">common signature message</a> construction for P2MR outputs is exactly the same procedure as defined in <a href="/342" target="_blank">BIP 342 Common Signature Message</a>.</p>
+<p>The <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#common-signature-message" target="_blank">common signature message</a> construction for P2MR outputs is exactly the same procedure as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki#user-content-Common_Signature_Message_Extension" target="_blank">BIP 342 Common Signature Message</a>.</p>
 <h3> Compatibility with BIP 141 </h3>
 <p>By adhering to the SegWit transaction structure and versioning, P2MR outputs are compatible with existing transaction processing rules. Nodes that do not recognize SegWit version 2 will treat these outputs as anyone-can-spend but generally will not relay or mine such transactions.</p>
 <h3>Transaction Size and Fees</h3>
@@ -296,7 +296,7 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
 <h2>Related Work</h2>
 <p>Below we attempt to summarize some of the ideas discussed on the Bitcoin Development Mailing List that relate to P2MR.</p>
 <p>The idea of Taproot with key path spend removed has been discussed a number of times in the Bitcoin community.</p>
-<p>For instance, <a href="https://gnusha.org/pi/bitcoindev/CAD5xwhgzR8e5r1e4H-5EH2mSsE1V39dd06+TgYniFnXFSBqLxw@mail.gmail.com/" target="_blank">OP_CAT Makes Bitcoin Quantum Secure</a> notes that if we disable the key path spend in Taproot and activate OP_CAT <a href="/347" target="_blank">BIP 347</a>, we could achieve quantum resistance by using Lamport signatures with OP_CAT.</p>
+<p>For instance, <a href="https://gnusha.org/pi/bitcoindev/CAD5xwhgzR8e5r1e4H-5EH2mSsE1V39dd06+TgYniFnXFSBqLxw@mail.gmail.com/" target="_blank">OP_CAT Makes Bitcoin Quantum Secure</a> notes that if we disable the key path spend in Taproot and activate OP_CAT <a href="https://github.com/bitcoin/bips/blob/master/bip-0347.mediawiki" target="_blank">BIP 347</a>, we could achieve quantum resistance by using Lamport signatures with OP_CAT.</p>
 <p>Lamport and WOTS (Winternitz One-Time Signatures) built from CAT are quantum resistant, but are one-time signatures - meaning, if you sign twice for the same public key, you risk leaking your private key, which is a significant security concern for everyday users.</p>
 <p>This would require major changes to wallet behavior and would represent a significant security downgrade. Common practices, such as RBF and CPFP, could risk revealing private keys if no stateless signature scheme is used.</p>
 <p><a href="https://groups.google.com/g/bitcoindev/c/8O857bRSVV8/m/rTrpeFjWDAAJ" target="_blank">Trivial QC signatures with clean upgrade path</a> and <a href="https://groups.google.com/g/bitcoindev/c/oQKezDOc4us/m/T1vSMkZNAAAJ" target="_blank">Re: P2QRH / BIP 360 Update</a> also discuss the possibility of Taproot with key path spend removed. The design of P2MR was partly inspired by these discussions.</p>
@@ -367,7 +367,7 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
             </div>
             <p>See an issue with rendering or formatting? Submit an issue on <a href="https://github.com/nickmonad/bips.dev" target="_blank">GitHub</a></p>
             <p>Do you find this site useful? Please consider <a href="https://buy.tryspeed.com/plink_live_lyek4a2yW2Sn2wfA" target="_blank">donating</a> some sats to support ongoing development.</p>
-            <p><a href="/">bips.dev</a> is presented by <a href="https://nickmonad.blog" target="_blank">nickmonad</a></p>
+            <p><a href="https://bips.dev/">bips.dev</a> is presented by <a href="https://nickmonad.blog" target="_blank">nickmonad</a></p>
             <p class="pt-4 text-sm">All content is owned and licensed by the respective author(s). </p>
         </div>
     </div>

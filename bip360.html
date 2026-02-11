@@ -153,26 +153,27 @@
 <p><nowiki>*</nowiki> Funds in P2PKH, P2SH, P2WPKH, P2WSH, and P2MR outputs can become vulnerable to long exposure quantum attacks anytime their script reveals a public key.</p>
 <p>Note: Extended public keys, commonly known as "xpubs," and wallet descriptors also reveal quantum vulnerable public key information. For further clarification on quantum attack vectors, please refer to the <a href="#Glossary" target="_blank">Glossary of Terms</a>.</p>
 <h2>Design</h2>
-<p>Pay-to-Tapscript-Hash (P2TSH) is a proposed new output type that commits to the root of a tapscript tree. It operates with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the quantum vulnerable key path spend removed.</p>
-<p>In other words, P2TSH outputs commit to the Merkle root of a tapscript tree without committing to an internal key. The script(s) being committed to, however, may contain a key or key-hash.</p>
-<p>This output type is designed to offer tapscript users protection against long exposure quantum attacks as well as a practical output type with which post-quantum signatures may be used if such signatures are adopted in the future.</p>
-<p>Since P2TSH outputs have no key path spend, they omit the Taproot internal key. Instead, a P2TSH output includes the 32-byte root of the taptree as defined in <a href="/341" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
+<p>Pay-to-Merkle-Root (P2MR) is a proposed new output type that commits to the root of a script tree. It operates with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the quantum vulnerable key path spend removed.</p>
+<p>In other words, P2MR outputs commit to the Merkle root of a script tree without committing to an internal key. The script(s) being committed to, however, may contain a key or key-hash.</p>
+<p>This output type is designed to offer users protection against long exposure quantum attacks as well as a practical output type with which post-quantum signatures may be used if such signatures are adopted in the future.</p>
+<p>Since P2MR outputs have no key path spend, they omit the Taproot internal key. Instead, a P2MR output includes the 32-byte root of the script tree as defined in <a href="/341" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
 <img src="/images/merkletree.png" />
-<p>To construct a P2TSH output, we follow the process outlined in <a href="/341" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the tapleaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2TSH outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
+<span>Construction of P2MR script tree root, scriptPubkey, and Witness</span>
+<p>To construct a P2MR output, we follow the process outlined in <a href="/341" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the script leaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2MR outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
 <pre><code>D = tagged_hash(&quot;TapLeaf&quot;, bytes([leaf_version]) + ser_script(script))
 CD = tagged_hash(&quot;TapBranch&quot;, C + D)
 CDE = tagged_hash(&quot;TapBranch&quot;, CD + E)
 ABCDE = tagged_hash(&quot;TapBranch&quot;, AB + CDE)
 </code></pre>
-<p>A P2TSH input witness provides the following:</p>
+<p>A P2MR input witness provides the following:</p>
 <pre><code>initial stack element 0,
 ...,
 initial stack element N,
 tapleaf script,
 control block = [control byte, 32*m byte Merkle path] # m is the depth of the script in the Merkle tree
 </code></pre>
-<p>The initial stack elements of P2TSH provide the same functionality as they do in P2TR. That is, they place elements on the stack to be evaluated by the script.</p>
-<p>The control block is a <em>1 + 32 * m</em> byte array, where the first byte is the control byte and the next <em>32 * m</em> bytes are the Merkle path to the tapleaf script. The control byte is the same as the control byte in a P2TR control block, including the 7 bits which are used to specify the tapleaf version. The parity bit of the control byte is always 1, since P2TSH does not have a key path spend. Unlike P2TR, we omit the public key from the control block as it is not needed in P2TSH. We maintain support for the optional annex in the witness (see Specification section below for more details).</p>
+<p>The initial stack elements of P2MR follow the same rules as P2TR script path spends. That is, they place elements on the stack to be evaluated by the leaf script.</p>
+<p>The control block is a 1 + 32 * m byte array, where the first byte is the control byte and the next 32 * m bytes are the Merkle path to the leaf script. The control byte is the same as the control byte in a P2TR control block, including the 7 bits which are used to specify the leaf version. The parity bit of the control byte is always 1, since P2MR does not have a key path spend. Unlike P2TR, we omit the public key from the control block as it is not needed in P2MR. We maintain support for the optional annex in the witness (see Specification section below for more details).</p>
 <h2>Rationale</h2>
 <p>Design of the P2TSH output type is guided by the following intentions:</p>
 <ol>

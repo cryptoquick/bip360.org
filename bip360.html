@@ -3,23 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
+    <meta name="description" content="BIP 360: Pay-to-Merkle-Root (P2MR)" />
     <meta name="keywords" content="bitcoin, bitcoin improvement proposals, bip, bips, static, share" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="og:title" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
-    <meta property="og:description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
+    <meta property="og:title" content="BIP 360: Pay-to-Merkle-Root (P2MR)" />
+    <meta property="og:description" content="BIP 360: Pay-to-Merkle-Root (P2MR)" />
     <meta property="og:image" content="https://bips.dev/og-bips-dev.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
-    <meta name="twitter:description" content="BIP 360: Pay-to-Tapscript-Hash (P2TSH)" />
+    <meta name="twitter:title" content="BIP 360: Pay-to-Merkle-Root (P2MR)" />
+    <meta name="twitter:description" content="BIP 360: Pay-to-Merkle-Root (P2MR)" />
     <meta name="twitter:creator" content="@cryptoquick" />
     <meta name="twitter:image" content="https://bips.dev/og-bips-dev.png" />
 
-    <title>BIP 360: Pay-to-Tapscript-Hash (P2TSH)</title>
+    <title>BIP 360: Pay-to-Merkle-Root (P2MR)</title>
 
     <link rel="stylesheet" href="/style.css" />
 
@@ -85,7 +85,7 @@
         </div>
     </div>
     <div class="flex flex-col space-y-2">
-        <div class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">BIP 360: Pay-to-Tapscript-Hash (P2TSH)</div>
+        <div class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">BIP 360: Pay-to-Merkle-Root (P2MR)</div>
         <div class="flex flex-col sm:flex-row sm:justify-between gap-4 text-xl text-gray-700 dark:text-gray-300">
             <div class="font-semibold">2024-12-18</div>
             <a href="https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">View on GitHub</a>
@@ -156,10 +156,10 @@
 <p>Pay-to-Merkle-Root (P2MR) is a proposed new output type that commits to the root of a script tree. It operates with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the quantum vulnerable key path spend removed.</p>
 <p>In other words, P2MR outputs commit to the Merkle root of a script tree without committing to an internal key. The script(s) being committed to, however, may contain a key or key-hash.</p>
 <p>This output type is designed to offer users protection against long exposure quantum attacks as well as a practical output type with which post-quantum signatures may be used if such signatures are adopted in the future.</p>
-<p>Since P2MR outputs have no key path spend, they omit the Taproot internal key. Instead, a P2MR output includes the 32-byte root of the script tree as defined in <a href="/341" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
+<p>Since P2MR outputs have no key path spend, they omit the Taproot internal key. Instead, a P2MR output includes the 32-byte root of the script tree as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a> hashed with the tag "TapBranch" as shown below.</p>
 <img src="/images/merkletree.png" />
 <span>Construction of P2MR script tree root, scriptPubkey, and Witness</span>
-<p>To construct a P2MR output, we follow the process outlined in <a href="/341" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the script leaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2MR outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
+<p>To construct a P2MR output, we follow the process outlined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a> to compute the final tapbranch hash, which is the merkle root of the script leaves; however, instead of tweaking the internal key with the root of the Merkle tree (as is the case with P2TR outputs), P2MR outputs commit only to final tapbranch hash, which is tagged, "TapBranch".</p>
 <pre><code>D = tagged_hash(&quot;TapLeaf&quot;, bytes([leaf_version]) + ser_script(script))
 CD = tagged_hash(&quot;TapBranch&quot;, C + D)
 CDE = tagged_hash(&quot;TapBranch&quot;, CD + E)
@@ -197,7 +197,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <p><strong>Note:</strong> P2MR and P2TR both provide greater script privacy than P2SH <a href="/16" target="_blank">BIP 16</a> because unused script paths are not revealed.</p>
 <h2>Specification</h2>
 <p>We define the Pay-to-Merkle-Root (P2MR) output structure as follows:</p>
-<p>A P2MR output is similar to a P2TR output (as defined in <a href="/341" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. A P2MR output is then a SegWit version 2 byte followed by the Merkle root of the script tree as the witness program.</p>
+<p>A P2MR output is similar to a P2TR output (as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. A P2MR output is then a SegWit version 2 byte followed by the Merkle root of the script tree as the witness program.</p>
 <h3>Address Format</h3>
 <p>P2MR outputs use SegWit version 2, resulting in mainnet addresses that start with bc1z, following <a href="/173" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
 <p>Example P2MR address:</p>
@@ -214,7 +214,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li><code>&lt;hash&gt;</code> is the 32-byte Merkle root of the script tree.</li>
 </ul>
 <h3>Script Validation</h3>
-<p>A P2MR output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. For the sake of comparison, we have — as much as possible — copied the language verbatim from the script validation section of <a href="/341" target="_blank">BIP 341</a>.</p>
+<p>A P2MR output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. For the sake of comparison, we have — as much as possible — copied the language verbatim from the script validation section of <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>.</p>
 <ul>
 <li>Let <em>q</em> be the 32-byte array containing the witness program (the second push in the scriptPubKey) which represents the Merkle root of the script tree.</li>
 <li>Fail if the witness stack does not have two or more elements.</li>
@@ -222,9 +222,9 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li>If there are at least three witness elements, and the first byte of the last element is 0x50, this last element is called annex a and is removed from the witness stack. The annex (or the lack thereof) is always covered by the signature and contributes to transaction weight, but is otherwise ignored during P2MR validation.</li>
 <li>There must be at least two witness elements left.
 <ul>
-<li>Call the second-to-last stack element <em>s</em>, the script (as defined in <a href="/341" target="_blank">BIP 341</a>)</li>
+<li>Call the second-to-last stack element <em>s</em>, the script (as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>)</li>
 <li>The last stack element is called the control block <em>c</em>, and must have length <em>1 + 32 * m</em>, for a value of <em>m</em> that is an integer between 0 and 128, inclusive. Fail if it does not have such a length.</li>
-<li>Let <em>v = c[0] &amp; 0xfe</em> be the <em>leaf version</em> (as defined in <a href="/341" target="_blank">BIP 341</a>). To maintain <em>leaf version</em> encoding compatibility the last bit of c[0] is unused and must be 1.<sup id="cite_ref_5"><a href="#cite_ref_5">5</a></sup></li>
+<li>Let <em>v = c[0] &amp; 0xfe</em> be the <em>leaf version</em> (as defined in <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>). To maintain <em>leaf version</em> encoding compatibility the last bit of c[0] is unused and must be 1.<sup id="cite_ref_5"><a href="#cite_ref_5">5</a></sup></li>
 <li>Let <em>k<sub>0</sub> = hash<sub>TapLeaf</sub>(v || compact_size(size of s) || s)</em>; also call it the <em>tapleaf hash</em>.</li>
 <li>For <em>j</em> in <em>[0,1,...,m-1]</em>:
 <ul>
@@ -240,7 +240,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 </ul>
 </li>
 </ul>
-<p>The steps above follow the script path spend logic from <a href="/341" target="_blank">BIP 341</a> with the following changes:</p>
+<p>The steps above follow the script path spend logic from <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a> with the following changes:</p>
 <ul>
 <li>The witness program is the the Merkle root of the script tree and not a tweaked public key. This means that we skip directly to the BIP 341 script path validation.</li>
 <li>We compute the script tree Merkle root <em>r</em> and compare it directly to the witness program <em>q</em>.</li>
@@ -294,18 +294,18 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
 <p>These test vectors build off of the test vectors for <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a> (Taproot). One important distinction is that the P2MR test vectors do not include keypath spend scenarios.</p>
 <p>Also included are test vectors in <a href="https://github.com/bitcoin/bips/tree/master/bip-0360/ref-impl/rust" target="_blank">rust implementation</a> and <a href="https://github.com/bitcoin/bips/tree/master/bip-0360/ref-impl/python" target="_blank">python implementation</a>.One of these tests demonstrates a tapscript that requires a secp256k1 signature to spend the P2MR UTXO modeled after one of the extremely valuable examples provided by <a href="https://learnmeabitcoin.com/technical/upgrades/taproot/#example-3-script-path-spend-signature" target="_blank">this Taproot script path spend example</a>. Similar to BIP 341 test vectors, all signatures are created with an all-zero (0x0000...0000) <a href="https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki" target="_blank">BIP 340</a> auxiliary randomness array.</p>
 <h2>Related Work</h2>
-<p>Below we attempt to summarize some of the ideas discussed on the Bitcoin Development Mailing List that relate to P2TSH.</p>
+<p>Below we attempt to summarize some of the ideas discussed on the Bitcoin Development Mailing List that relate to P2MR.</p>
 <p>The idea of Taproot with key path spend removed has been discussed a number of times in the Bitcoin community.</p>
 <p>For instance, <a href="https://gnusha.org/pi/bitcoindev/CAD5xwhgzR8e5r1e4H-5EH2mSsE1V39dd06+TgYniFnXFSBqLxw@mail.gmail.com/" target="_blank">OP_CAT Makes Bitcoin Quantum Secure</a> notes that if we disable the key path spend in Taproot and activate OP_CAT <a href="/347" target="_blank">BIP 347</a>, we could achieve quantum resistance by using Lamport signatures with OP_CAT.</p>
 <p>Lamport and WOTS (Winternitz One-Time Signatures) built from CAT are quantum resistant, but are one-time signatures - meaning, if you sign twice for the same public key, you risk leaking your private key, which is a significant security concern for everyday users.</p>
 <p>This would require major changes to wallet behavior and would represent a significant security downgrade. Common practices, such as RBF and CPFP, could risk revealing private keys if no stateless signature scheme is used.</p>
-<p><a href="https://groups.google.com/g/bitcoindev/c/8O857bRSVV8/m/rTrpeFjWDAAJ" target="_blank">Trivial QC signatures with clean upgrade path</a> and <a href="https://groups.google.com/g/bitcoindev/c/oQKezDOc4us/m/T1vSMkZNAAAJ" target="_blank">Re: P2QRH / BIP 360 Update</a> also discuss the possibility of Taproot with key path spend removed. The design of P2TSH was partly inspired by these discussions.</p>
+<p><a href="https://groups.google.com/g/bitcoindev/c/8O857bRSVV8/m/rTrpeFjWDAAJ" target="_blank">Trivial QC signatures with clean upgrade path</a> and <a href="https://groups.google.com/g/bitcoindev/c/oQKezDOc4us/m/T1vSMkZNAAAJ" target="_blank">Re: P2QRH / BIP 360 Update</a> also discuss the possibility of Taproot with key path spend removed. The design of P2MR was partly inspired by these discussions.</p>
 <p>Commit-reveal schemes such as <a href="https://gnusha.org/pi/bitcoindev/1518710367.3550.111.camel@mmci.uni-saarland.de/" target="_blank">Re: Transition to post-quantum (2018)</a> and <a href="https://groups.google.com/g/bitcoindev/c/LpWOcXMcvk8/m/YEiH-kTHAwAJ" target="_blank">Post-Quantum commit / reveal Fawkescoin variant as a soft fork (2025)</a> have been proposed as a way to create cryptocurrencies without public key cryptography. The ideas in this paper were more recently expanded upon by Tadge Dryja in his "<a href="https://www.youtube.com/watch?v=4bzOwYPf1yo" target="_blank">Lifeboat</a>" proposal, which effectively quantum-proofs Bitcoin transactions through a similar pre-commitment scheme designed for Bitcoin.</p>
 <h2>Other Methods of Addressing Quantum Vulnerabilities for Cryptocurrencies</h2>
 <p>It is worth noting, by way of comparison, that <a href="https://ethresear.ch/t/how-to-hard-fork-to-save-most-users-funds-in-a-quantum-emergency/18901" target="_blank">Vitalik Buterin's proposed solution</a> to Ethereum's quantum vulnerability is quite different from the approach in this BIP.</p>
 <p>His plan involves a hard fork of the chain, reverting all blocks after some sufficient amount of theft, and using STARKs based on BIP 32 seeds to act as the authoritative secret when signing. We believe rollbacks of any kind are an untenable approach for Bitcoin and would likely be impractical to implement.</p>
 <p>That said, we believe the use of STARKs (which are quantum-resistant) may prove useful as a method of proving access to external private keys, in the event that the community chooses to burn vulnerable coins as proposed by Jameson Lopp and others in <a href="https://qbip.org/" target="_blank">QBIP</a>.</p>
-<p>Discussions related to the burning of coins, and other attempts to slow a potential supply shock caused by quantum-retrieval of vulnerable coins, are out of scope for this proposal. That said, members of our team have separately proposed <a href="https://github.com/bitcoin/bips/blob/master/bip-0360.mediawiki" target="_blank">Hourglass</a> to address this concern and are continuing research on this subject.</p>
+<p>Discussions related to the burning of coins, and other attempts to slow a potential supply shock caused by quantum-retrieval of vulnerable coins, are out of scope for this proposal. That said, members of our team have separately proposed <a href="https://github.com/cryptoquick/bips/blob/hourglass/bip-hourglass.mediawiki" target="_blank">Hourglass</a> to address this concern and are continuing research on this subject.</p>
 <h2>Conclusion</h2>
 <p>In this proposal, we adopt a "prepared not scared" approach to the possible advancement of quantum computing and offer Bitcoin users an option for increased protection if they so choose. This BIP does not take a position on any specific quantum computing timeline, but rather proposes a flexible and unobtrusive option for users that wish to mitigate this risk according to their own estimate of the timeline.</p>
 <p>This is an issue that has been discussed with some regularity in <a href="https://bitcointalk.org/index.php?topic=133425.0" target="_blank">Bitcoin forums</a> since at least 2012, and there is clearly user demand for increased quantum protection.</p>
@@ -319,22 +319,23 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
 <p><strong>Short Exposure Attacks</strong></p>
 <p>Attempts to derive private keys from public keys during the brief period when funds are unconfirmed in the mempool. These attacks cannot be prevented through wallet hygiene, as revealing a public key is necessary for spending.</p>
 <p>Protection against short exposure attacks may require post-quantum signature schemes; that said, executing these attacks requires faster CRQCs than those capable of executing long exposure attacks and are therefore viewed as lower-risk than long exposure attacks in the nearer term.</p>
-<p><strong>Tapscript-Native Output Type</strong></p>
-<p>Tapscript-native output types are the category of output types that support tapscript (including Schnorr signatures) and taptrees.</p>
-<p><strong>Pay-to-Tapscript-Hash (P2TSH)</strong></p>
-<p>A tapscript-native output type, similar to to Pay-to-Taproot (P2TR), but with the quantum-vulnerable key path spend removed.</p>
+<p><strong>Script Tree Output Type</strong></p>
+<p>Script tree output types are a category of output type that support a script tree consisting of leaf scripts. Script tree output types support tapscript and would support any new script language added to bitcoin which is able to be used as a leaf script in a script trees. If Pay-to-Merkle-Root (P2MR) is activated, P2MR would be the second script tree output type in Bitcoin, the other being Pay-to-Taproot (P2TR).</p>
+<p><strong>Pay-to-Merkle-Root (P2MR)</strong></p>
+<p>A script tree output type, similar to to Pay-to-Taproot (P2TR), but with the quantum-vulnerable key path spend removed.</p>
 <h2>Footnotes</h2>
 <ol>
 <li><a href="http://127.0.0.1:1111/360/#cite_ref_1">^</a> A Cryptographically Relevant Quantum Computer is an <em>object</em> which is only loosely defined by <em>characteristics</em> in quantum physics as of today. It could be understood in the context of this BIP and in Bitcoin that it's a <em>hardware-agnostic</em> computer supposed to have the architecture to keep <em>coherent</em> a sufficient number of logical qubits to be able to run Shor's algorithm in an efficient fashion.</li>
 <li><a href="http://127.0.0.1:1111/360/#cite_ref_2">^</a> Shor's algorithm is believed to need 10^8 operations to break a 256-bit elliptic curve public key.</li>
 <li><a href="http://127.0.0.1:1111/360/#cite_ref_3">^</a> Meaning, deriving private keys from public keys via Shor's algorithm</li>
 <li><a href="http://127.0.0.1:1111/360/#cite_ref_4">^</a> <code>OP_SUCCESSx</code> is a mechanism to upgrade tapscript</li>
-<li><a href="http://127.0.0.1:1111/360/#cite_ref_5">^</a> Why set the last bit of c[0] to one? Consider a faulty implementation that deserializes the <em>leaf version</em> as c[0] rather than c[0] &amp; 0xfe for both P2TR and P2TSH. If they test against P2TSH outputs and require that last bit is 1, this deserialization bug will cause an immediate error.</li>
+<li><a href="http://127.0.0.1:1111/360/#cite_ref_5">^</a> Why set the last bit of c[0] to one? Consider a faulty implementation that deserializes the <em>leaf version</em> as c[0] rather than c[0] &amp; 0xfe for both P2TR and P2MR. If they test against P2MR outputs and require that last bit is 1, this deserialization bug will cause an immediate error.</li>
 <li><a href="http://127.0.0.1:1111/360/#cite_ref_6">^</a> If <em>m &gt;= 8</em>, then the compact size will use 3 bytes rather than 1 byte</li>
 </ol>
 <h2>Changelog</h2>
 <p>To help implementers understand updates to this BIP, we keep a list of substantial changes.</p>
 <ul>
+<li>2026-02-10 - Rename BIP from Pay-to-Tapscript-Hash (P2TSH) to Pay-to-Merkle-Root (P2MR)</li>
 <li>2025-09-17 - Rewrote BIP for clarity and renamed from P2QRH to P2TSH</li>
 <li>2025-07-20 - Changed the Witness Version from 3 to 2.</li>
 <li>2025-07-07 - P2QRH is now a P2TR with the vulnerable key path spend removed. Number of PQ signature algorithms supported reduced from three to two. PQ signature algorithm support is now added via opcodes or tapleaf version.</li>
@@ -352,7 +353,7 @@ control block = [size] [control byte] [Merkle path] (1 + 1 + 32*m = 2 + 32*m byt
 <li>2024-09-27 - Initial draft proposal</li>
 </ul>
 <h2>Acknowledgements</h2>
-<p>This document is inspired by <a href="/341" target="_blank">BIP 341</a>, which introduced the design of the P2TR (Taproot) output type using Schnorr signatures.</p>
+<p>This document is inspired by <a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki" target="_blank">BIP 341</a>, which introduced the design of the P2TR (Taproot) output type using Schnorr signatures.</p>
 <p>I'm incredibly grateful to Ethan Heilman for joining as co-author and transforming this BIP into something far more congruent with existing Bitcoin design. Additionally, much gratitude to our most recent co-author, Isabel Foxen Duke, for her thoughtful editing and crafting much of the language in this proposal. I am likewise indebted to those on the Anduro Quantum Working Group who took the time to contribute including Jeff Bride, Michael Casey, and notmike.</p>
 <p>Thank you as well to those who took the time to review and contribute, including Jon Atack, Adam Borcany, Ava Chow, Kyle Crews, Pierre-Luc Dallaire-Demers, D++, Mark Erhardt, Jameson Lopp, Antoine Riard, Armin Sabouri, Vojtěch Strnad, Guy Swann, and Joey Yandle.</p>
 <p>Whatever inaccuracies may remain are attributable solely to the authors.</p>

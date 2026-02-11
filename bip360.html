@@ -96,7 +96,7 @@
         <article class="max-w-none prose prose-lg prose-zinc prose-p:leading-relaxed prose-a:font-bold prose-a:underline prose-a:decoration-2 prose-a:decoration-bitcoin prose-pre:bg-zinc-200 prose-pre:text-zinc-800 dark:prose-invert dark:prose-pre:bg-zinc-600 dark:prose-pre:text-white">
             <pre><code>  BIP: 360
   Layer: Consensus (soft fork)
-  Title: Pay-to-Tapscript-Hash (P2TSH)
+  Title: Pay-to-Merkle-Root (P2MR)
   Author: Hunter Beast &lt;hunter@surmount.systems&gt;
           Ethan Heilman &lt;ethan.r.heilman@gmail.com&gt;
           Isabel Foxen Duke &lt;isabel.duke@gmail.com&gt;
@@ -106,17 +106,18 @@
   Type: Standards Track
   Created: 2024-12-18
   License: BSD-3-Clause
+  Version: 0.11.0
   Requires: 340, 341, 342
 </code></pre>
 <h2>Introduction</h2>
 <h3>Abstract</h3>
-<p>This document proposes a new output type: Pay-to-Tapscript-Hash (P2TSH), via a soft fork. P2TSH outputs operate with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the key path spend removed.</p>
-<p>Through this modification, P2TSH outputs allow developers to use tapscript in a manner that is:</p>
+<p>This document proposes a new output type: Pay-to-Merkle-Root (P2MR), via a soft fork. P2MR outputs operate with nearly the same functionality as P2TR (Pay-to-Taproot) outputs, but with the key path spend removed.</p>
+<p>Through this modification, P2MR outputs allow developers to use script trees and tapscript in a manner that is:</p>
 <ol>
 <li>resistant to long exposure attacks by Cryptographically Relevant Quantum Computers (CRQCs), and</li>
 <li>resistant to future cryptanalytic approaches that may compromise the elliptic curve cryptography (ECC) used by Bitcoin.</li>
 </ol>
-<p>It is worth noting that proposed P2TSH outputs are only resistant to "long exposure attacks" on elliptic curve cryptography; that is, attacks on keys exposed for time periods longer than needed to confirm a spending transaction.</p>
+<p>It is worth noting that proposed P2MR outputs are only resistant to "long exposure attacks" on elliptic curve cryptography; that is, attacks on keys exposed for time periods longer than needed to confirm a spending transaction.</p>
 <p>Protection against more sophisticated quantum attacks, including protection against private key recovery from public keys exposed in the mempool while a transaction is waiting to be confirmed (a.k.a. "short exposure attacks"), may require the introduction of post-quantum signatures in Bitcoin. We believe it's worth considering this path in the future and intend to offer a separate proposal for this purpose upon further research.</p>
 <p>This document additionally defines "long exposure" and "short exposure" attacks, and other new terminology in the Glossary.</p>
 <h3>Copyright</h3>

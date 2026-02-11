@@ -196,29 +196,30 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <p>Additionally, there is a privacy tradeoff when comparing P2MR and P2TR, which is that users reveal they are spending to a script tree whenever they are using P2MR outputs, since P2MR outputs can only be spent via script path spend. In P2TR when you spend an output as a key path spend, you don't reveal if you have any script path spends. This trade-off only exists when comparing P2TR key path spends to P2MR script path spends; P2TR and P2MR provide the same level of privacy when both are script path spends.</p>
 <p><strong>Note:</strong> P2MR and P2TR both provide greater script privacy than P2SH <a href="/16" target="_blank">BIP 16</a> because unused script paths are not revealed.</p>
 <h2>Specification</h2>
-<p>We define the Pay-to-Tapscript-Hash (P2TSH) output structure as follows:</p>
-<p>A P2TSH output is similar to a P2TR output that uses the root of a taptree (as defined in <a href="/341" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. The root of the Merkle tree is then set as the witness program, prepended with a SegWit version 2 byte, and committed to in the output scriptPubKey.</p>
+<p>We define the Pay-to-Merkle-Root (P2MR) output structure as follows:</p>
+<p>A P2MR output is similar to a P2TR output (as defined in <a href="/341" target="_blank">BIP 341</a>); however, unlike P2TR outputs, we disable the key path spend for the benefit of quantum resistance by omitting the internal key and the tap tweak step. A P2MR output is then a SegWit version 2 byte followed by the Merkle root of the script tree as the witness program.</p>
 <h3>Address Format</h3>
-<p>P2TSH outputs use SegWit version 2, resulting in mainnet addresses that start with <code>bc1z</code>, following <a href="/173" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
-<p>Example P2TSH address:</p>
+<p>P2MR outputs use SegWit version 2, resulting in mainnet addresses that start with bc1z, following <a href="/173" target="_blank">BIP 173</a>. Bech32m encoding maps version 2 to the prefix <code>z</code>.</p>
+<p>Example P2MR address:</p>
 <pre><code>bc1zzmv50jjgxxhww6ve4g5zpewrkjqhr06fyujpm20tuezdlxmfphcqfc80ve
 </code></pre>
-<p>This commits to a 32-byte tapscript tree hash.</p>
+<p>This commits to a 32-byte script tree Merkle root.</p>
 <h3>ScriptPubKey</h3>
-<p>The <code>scriptPubKey</code> for a P2TSH output is:</p>
+<p>The <code>scriptPubKey</code> for a P2MR output is:</p>
 <pre><code>OP_2 OP_PUSHBYTES_32 &lt;hash&gt;
 </code></pre>
 <p>Where:</p>
 <ul>
 <li><code>OP_2</code> indicates SegWit version 2.</li>
-<li><code>&lt;hash&gt;</code> is the 32-byte Merkle root of the taptree.</li>
+<li><code>&lt;hash&gt;</code> is the 32-byte Merkle root of the script tree.</li>
 </ul>
 <h3>Script Validation</h3>
-<p>A P2TSH output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. The witness program is the root of the tapscript tree. For the sake of comparison, we have - as much as possible - copied the language verbatim from the script validation section of <a href="/341" target="_blank">BIP 341</a>.</p>
+<p>A P2MR output is a native SegWit output (see <a href="/141" target="_blank">BIP 141</a>) with version 2 and a 32-byte witness program. For the sake of comparison, we have — as much as possible — copied the language verbatim from the script validation section of <a href="/341" target="_blank">BIP 341</a>.</p>
 <ul>
-<li>Let <em>q</em> be the 32-byte array containing the witness program (the second push in the scriptPubKey) which represents the root of the tapleaf Merkle tree (also known as a taptree).</li>
+<li>Let <em>q</em> be the 32-byte array containing the witness program (the second push in the scriptPubKey) which represents the Merkle root of the script tree.</li>
 <li>Fail if the witness stack does not have two or more elements.</li>
-<li>If there are at least three witness elements, and the first byte of the last element is 0x50, this last element is called <em>annex a</em> and is removed from the witness stack. The annex (or the lack thereof) is always covered by the signature and contributes to transaction weight, but is otherwise ignored during P2TSH validation.</li>
+<li>Fail if the witness stack has exactly two elements and the first byte of the last element is 0x50.</li>
+<li>If there are at least three witness elements, and the first byte of the last element is 0x50, this last element is called annex a and is removed from the witness stack. The annex (or the lack thereof) is always covered by the signature and contributes to transaction weight, but is otherwise ignored during P2MR validation.</li>
 <li>There must be at least two witness elements left.
 <ul>
 <li>Call the second-to-last stack element <em>s</em>, the script (as defined in <a href="/341" target="_blank">BIP 341</a>)</li>
@@ -227,7 +228,7 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 <li>Let <em>k<sub>0</sub> = hash<sub>TapLeaf</sub>(v || compact_size(size of s) || s)</em>; also call it the <em>tapleaf hash</em>.</li>
 <li>For <em>j</em> in <em>[0,1,...,m-1]</em>:
 <ul>
-<li>Let <em>e<sub>j</sub> = c[33+32j:65+32j]</em>.</li>
+<li>Let <em>e<sub>j</sub> = c[1+32j:33+32j]</em>.</li>
 <li>Let <em>k<sub>j+1</sub></em> depend on whether <em>k<sub>j</sub> &lt; e<sub>j</sub></em> (lexicographically):
 *  If <em>k<sub>j</sub> &lt; e<sub>j</sub></em>: <em>k<sub>j+1</sub> = hash<sub>TapBranch</sub>(k<sub>j</sub> || e<sub>j</sub>)</em>.
 *  If <em>k<sub>j</sub> ≥ e<sub>j</sub></em>: <em>k<sub>j+1</sub> = hash<sub>TapBranch</sub>(e<sub>j</sub> || k<sub>j</sub>)</em>.</li>
@@ -235,14 +236,14 @@ control block = [control byte, 32*m byte Merkle path] # m is the depth of the sc
 </li>
 <li>Let <em>r = k<sub>m</sub></em>.</li>
 <li>If <em>q ≠ r</em>, fail.</li>
-<li>Execute the script, according to the applicable script rules, using the witness stack elements excluding the script <em>s</em>, the control block <em>c</em>, and the annex <em>a</em> if present, as initial stack. This implies that for the future leaf versions (non-<em>0xC0</em>) the execution must succeed.</li>
+<li>Execute the script, according to the script rules specified in BIP 342, using the witness stack elements excluding the script <em>s</em>, the control block <em>c</em>, and the annex <em>a</em> if present, as initial stack. This implies that for the future leaf versions (non-<em>0xC0</em>) the execution must succeed.</li>
 </ul>
 </li>
 </ul>
 <p>The steps above follow the script path spend logic from <a href="/341" target="_blank">BIP 341</a> with the following changes:</p>
 <ul>
-<li>The witness program is the taptree Merkle root and not a tweaked public key. This means that we skip directly to the BIP 341 spend path taptree Merkle tree validation.</li>
-<li>We compute the taptree Merkle root <em>r</em> and compare it directly to the witness program <em>q</em>.</li>
+<li>The witness program is the the Merkle root of the script tree and not a tweaked public key. This means that we skip directly to the BIP 341 script path validation.</li>
+<li>We compute the script tree Merkle root <em>r</em> and compare it directly to the witness program <em>q</em>.</li>
 <li>The control block is <em>1 + 32*m</em> bytes, instead of <em>33 + 32*m</em> bytes.</li>
 </ul>
 <h3>Common Signature Message Construction</h3>
